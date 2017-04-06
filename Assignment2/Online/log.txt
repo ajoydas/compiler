@@ -1,0 +1,56 @@
+Error at line 1: Too many decimal point 1.2.345
+
+Line no 1: TOKEN <SEMICOLON> Lexeme ; found
+
+Error at line 2: Ill formed number 1E10.7
+
+Line no 2: TOKEN <SEMICOLON> Lexeme ; found
+
+Error at line 3: Invalid prefix on ID or invalid suffix on Number 12abcd
+
+Line no 3: TOKEN <SEMICOLON> Lexeme ; found
+
+Error at line 4: Multi character constant error 'ab'
+
+Line no 4: TOKEN <SEMICOLON> Lexeme ; found
+
+Error at line 5: Multi character constant error 'a;
+'
+
+Line no 5: TOKEN <SEMICOLON> Lexeme ; found
+
+Error at line 6: Multi character constant error 'ab cd'
+
+Line no 6: TOKEN <SEMICOLON> Lexeme ; found
+
+Error at line 7: Unrecognized character '\'
+
+Line no 7: TOKEN <SEMICOLON> Lexeme ; found
+
+Error at line 8: Empty character constant error '' 
+
+Line no 8: TOKEN <SEMICOLON> Lexeme ; found
+
+Error at line 9: Unterminated string "abcd;
+
+Line no 11: TOKEN <SEMICOLON> Lexeme ; found
+
+Line no 12: TOKEN <ID> Lexeme ijk found
+
+ScopeTable # 1
+6 -->  < ijk, ID> 
+
+Error at line 12: Unterminated string "
+
+
+Line no 13: TOKEN <SEMICOLON> Lexeme ; found
+
+Error at line 14: Unterminated comment /**abc
+def;
+
+
+ScopeTable # 1
+6 -->  < ijk, ID> 
+
+Total Lines: 15
+Total Errors: 11

@@ -2,6 +2,7 @@
 %x STRINGSTATE
 %x SINGLECOM
 %x MULTICOM
+%x ERR
 %{
 #include<stdio.h>
 #include<stdlib.h>
@@ -25,20 +26,19 @@ NEWLINE \n
 WHITESPACE [ \t\f\r\v]+ 
 LETTER [a-zA-Z]
 DIGIT [0-9]
-FLOAT_NUMBER [0-9]*([.][0-9]+)?(E[+-]?[0-9]+)?
+FLOAT_NUMBER [0-9]*[.]?[0-9]+(E[+-]?[0-9]+)?
 CHARACTER '[A-Za-z0-9]'
 CHARACTER_EX '\\[ntabfv0\\r"v]'
 IDENTIFIER [A-Za-z_][A-Za-z0-9_]*
 
 
-NON_IDENTIFIER [0-9]+[A-Za-z0-9_]+
+NON_IDENTIFIER [0-9]+[.]*[A-Za-z0-9_]+|[A-Za-z0-9_]+([.]+[A-Za-z0-9_]*)+
 DECIMAL_POINT_ERROR [0-9]*[.]([0-9]*[.]+[0-9]*)*
-ILL_FORMATTED_NUMBER [0-9]*((E[+-]?[0-9]+)([.][0-9]+)*)(E[+-]?[0-9]+)?([.][0-9]+)*
+ILL_FORMATTED_NUMBER [0-9]*([.]+[0-9]*)?([.]+[0-9]*)*E([0-9]*[.][0-9]*)([.][0-9]*)*|[.]+E([0-9]*)|[0-9]*[.]([0-9]*[.]+[0-9]*)*E([0-9]*)
 EMPTY_CHAR ''
-UNDETERMINED_CHAR '[^A-Za-z0-9'\n]+'
-ILL_FORMATTED_CHAR '[A-Za-z0-9 ][A-Za-z0-9 ]+'
-UNTERMINATED_CHAR '[A-Za-z0-9]*
-
+UNRECOGNIZED_CHAR '[^A-Za-z0-9_\']'|'\\[^ntabfv0\\r"v']'
+MULTI_CHAR '[A-Za-z0-9 ][A-Za-z0-9 ]+'|'[A-Za-z0-9 ][^A-Za-z0-9 '\n]+'|'\\[A-Za-z0-9 ][A-Za-z0-9 ]+'
+UNTERMINATED_CHAR '[A-Za-z0-9]* 
 
 %%
 
@@ -258,7 +258,7 @@ else
 						temp+=yytext;realstr+=yytext;
 									fprintf(logout,"Error at line %d: Undetermined string part \\%c at %s\n\n",line_count-templine,temp[j+1],realstr.c_str());
 									error_count++;
-									BEGIN INITIAL;
+									BEGIN ERR;
 									realstr="";
 									temp="";
 									templine=0;
@@ -308,7 +308,7 @@ else
 						temp+=yytext;realstr+=yytext;
 									fprintf(logout,"Error at line %d: Undetermined string part \\%c at %s\n\n",line_count-templine,temp[j+1],realstr.c_str());
 									error_count++;
-									BEGIN INITIAL;
+									BEGIN ERR;
 									realstr="";
 									temp="";
 									templine=0;
@@ -338,7 +338,7 @@ else
 			temp+=yytext;realstr+=yytext;
 			fprintf(logout,"Error at line %d: Unterminated string %s\n\n",line_count-templine,realstr.c_str());
 			error_count++;
-			BEGIN INITIAL;
+			BEGIN ERR;
 			realstr="";
 			temp="";
 			templine=0;
@@ -348,7 +348,7 @@ else
 			temp+=yytext;realstr+=yytext;
 			fprintf(logout,"Error at line %d: Unterminated string %s\n\n",line_count-templine,realstr.c_str());
 			error_count++;
-			BEGIN INITIAL;
+			BEGIN ERR;
 			realstr="";
 			temp="";
 			templine=0;
@@ -365,7 +365,7 @@ else{
 			realstr+=yytext;
 			fprintf(logout,"Error at line %d: Unterminated string %s\n\n",line_count-templine,realstr.c_str());
 			error_count++;
-			BEGIN INITIAL;
+			BEGIN ERR;
 			temp="";
 			templine=0;
 			realstr="";
@@ -427,47 +427,73 @@ line_count++;
 			temp+=yytext;
 			fprintf(logout,"Error at line %d: Unterminated comment %s\n\n",line_count-templine,temp.c_str());
 			error_count++;
-			BEGIN INITIAL;
 			temp="";
 			templine=0;
+			BEGIN INITIAL;
 			}
 <MULTICOM>.    {
 			temp+=yytext;
 			}
 
-{DECIMAL_POINT_ERROR} {
+{DECIMAL_POINT_ERROR} { 
+			BEGIN ERR;
 			fprintf(logout,"Error at line %d: Too many decimal point %s\n\n",line_count,yytext);
 			error_count++;
 			}
 {ILL_FORMATTED_NUMBER} {
+BEGIN ERR;
 			fprintf(logout,"Error at line %d: Ill formed number %s\n\n",line_count,yytext);
 			error_count++;
 			}
 {NON_IDENTIFIER}  {
+BEGIN ERR;
 			fprintf(logout,"Error at line %d: Invalid prefix on ID or invalid suffix on Number %s\n\n",line_count,yytext);
 			error_count++;
 		}
 {EMPTY_CHAR} {
+BEGIN ERR;
 			fprintf(logout,"Error at line %d: Empty character constant error %s \n\n",line_count,yytext);
 			error_count++;
 			}
-{UNTERMINATED_CHAR}|'\\'|'  {
+{UNTERMINATED_CHAR} {
+BEGIN ERR;
 			fprintf(logout,"Error at line %d: Unterminated character %s\n\n",line_count,yytext);
 			error_count++;
 			}
-{UNDETERMINED_CHAR} {
+{UNRECOGNIZED_CHAR} {
+BEGIN ERR;
 			fprintf(logout,"Error at line %d: Unrecognized character %s\n\n",line_count,yytext);
 			error_count++;
 			}
-{ILL_FORMATTED_CHAR} {
+{MULTI_CHAR} {
+BEGIN ERR;
 			fprintf(logout,"Error at line %d: Multi character constant error %s\n\n",line_count,yytext);
 			error_count++;
 			}
-
-
+<ERR>{NEWLINE}    {
+			line_count++;}
+<ERR>[;)}\]]    {
+if(strcmp(yytext,")")==0)		{
+			fprintf(token,"<RPAREN, %s> ",yytext);
+			fprintf(logout,"Line no %d: TOKEN <RPAREN> Lexeme %s found\n\n",line_count,yytext);
+			}
+if(strcmp(yytext,"}")==0)		{
+			fprintf(token,"<RCURL, %s> ",yytext);
+			fprintf(logout,"Line no %d: TOKEN <RCURL> Lexeme %s found\n\n",line_count,yytext);
+			}
+if(strcmp(yytext,"]")==0)		{
+			fprintf(token,"<RTHIRD, %s> ",yytext);
+			fprintf(logout,"Line no %d: TOKEN <RTHIRD> Lexeme %s found\n\n",line_count,yytext);
+			}
+if(strcmp(yytext,";")==0)    	{
+			fprintf(token,"<SEMICOLON, %s> ",yytext);
+			fprintf(logout,"Line no %d: TOKEN <SEMICOLON> Lexeme %s found\n\n",line_count,yytext);
+			}
+			BEGIN INITIAL;}
+<ERR>.    {}
 
 <<EOF>> 	{
-			//line_count--;
+			line_count--;
 			st->PrintAllScopeTable();
 			fprintf(logout,"Total Lines: %d\n",line_count); 
 			fprintf(logout,"Total Errors: %d\n",error_count);
