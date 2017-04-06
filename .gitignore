@@ -27,3 +27,8 @@
 *.exe
 *.out
 *.app
+
+
+#Archives
+.zip
+.rar
