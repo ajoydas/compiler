@@ -69,5 +69,14 @@ public:
 
 int main()
 {
-    new SymbolInfo();
+vector<SymbolInfo> params;
+SymbolInfo s("Ajoy","Das");
+params.push_back(s);
+cout<<params[0].getName();
 }
+
+
+
+
+
+

@@ -1,3 +1,2 @@
-'\\
-'abc
-abc
+int a(int b,int c);
+int a(int b,int c);

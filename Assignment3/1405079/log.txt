@@ -1,14 +1,38 @@
-Error at line 1: Unterminated character '
+Line No. 1: type_specifier : INT 
 
-Error at line 2: Unterminated character 'abc
+Line No. 1: type_specifier : INT 
 
-Line no 3: TOKEN <ID> Lexeme abc found
+Line No. 1: parameter_list  : type_specifier ID
+
+Line No. 1: type_specifier : INT 
+
+Line No. 1: parameter_list  : parameter_list COMMA type_specifier ID
+
+Line No. 1: func_declaration : type_specifier ID LPAREN parameter_list RPAREN SEMICOLON
 
 ScopeTable # 1
-1 -->  < abc, ID> 
+5 -->  < a, function> 
 
-ScopeTable # 1
-1 -->  < abc, ID> 
+Line No. 1: unit : func_declaration
 
-Total Lines: 3
-Total Errors: 2
+Line No. 1: program : unit
+
+Line No. 2: type_specifier : INT 
+
+Line No. 2: type_specifier : INT 
+
+Line No. 2: parameter_list  : type_specifier ID
+
+Line No. 2: type_specifier : INT 
+
+Line No. 2: parameter_list  : parameter_list COMMA type_specifier ID
+
+Line No. 2: func_declaration : type_specifier ID LPAREN parameter_list RPAREN SEMICOLON
+
+Line No. 2: unit : func_declaration
+
+Line No. 2: program : program unit
+
+Total Lines: 1
+Line No. 1: start : program
+

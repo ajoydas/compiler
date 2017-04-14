@@ -6,25 +6,55 @@
 using namespace std;
 
 extern FILE *logout;
+extern FILE *symtable;
 
+class SymbolInfo;
+class Function
+{
+public:
+	string retype;
+	vector<SymbolInfo> params;
+	
+};
 class SymbolInfo
 {
 private:
     string name;
     string type;
+	
+	
 public:
     SymbolInfo* next;
+	int ivalue;
+	float fvalue;
+	char c;
+	Function *fp;
+	SymbolInfo** array;
+	int arraysize = -1;
+
     SymbolInfo()
     {
         this->name = "";
         this->type = "";
+		ivalue=0;
+		fvalue=0;
+		c=0;
         this->next = NULL;
+		this->fp=NULL;
+		this-> array=NULL;
+		
     }
 
     SymbolInfo(string name,string type,SymbolInfo* next=NULL) {
         this->name = name;
         this->type = type;
         this->next = next;
+		ivalue=0;
+		fvalue=0;
+		c=0;
+        this->next = NULL;
+		this->fp=NULL;
+		this-> array=NULL;
     }
 
     const string &getName() const {
@@ -44,20 +74,7 @@ public:
     }
 };
 
-int hashFunction(int x)
-{
-    return (3*pow(x,4)+11*pow(x,3)+19*x);
-}
 
-int hashing(string tempString,int max)
-{
-    int length=tempString.size(),hashCode=0;
-    for (int i = 0; i < length; ++i) {
-        hashCode+=(hashFunction(tempString[i]))%max;
-        hashCode=(hashFunction(hashCode))%max;
-    }
-    return hashCode;
-}
 
 class ScopeTable
 {
@@ -211,6 +228,22 @@ public:
                 cout<<v[j].first<<" "<<v[j].second<<endl;
             }
     }
+	
+int hashFunction(int x)
+{
+    return (3*pow(x,4)+11*pow(x,3)+19*x);
+}
+
+int hashing(string tempString,int max)
+{
+    int length=tempString.size(),hashCode=0;
+    for (int i = 0; i < length; ++i) {
+        hashCode+=(hashFunction(tempString[i]))%max;
+        hashCode=(hashFunction(hashCode))%max;
+    }
+    return hashCode;
+}
+
 };
 
 class SymbolTable
