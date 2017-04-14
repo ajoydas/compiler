@@ -1,0 +1,7 @@
+ <a, int> Inserted at position 6, 0
+Array size: 2
+ <c, int> Inserted at position 8, 0
+ <i, int> Inserted at position 1, 0
+ <j, int> Inserted at position 2, 0
+ <d, float> Inserted at position 9, 0
+Item <a, int> Found at 6, 0

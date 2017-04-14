@@ -1,0 +1,14 @@
+Error at line 1: Unterminated character '
+
+Error at line 2: Unterminated character 'abc
+
+Line no 3: TOKEN <ID> Lexeme abc found
+
+ScopeTable # 1
+1 -->  < abc, ID> 
+
+ScopeTable # 1
+1 -->  < abc, ID> 
+
+Total Lines: 3
+Total Errors: 2

@@ -1,0 +1,56 @@
+.model small
+.stack 100H
+.data
+i dw 0
+j dw 0
+k dw 0
+a dw 0
+b dw 0
+c dw 0
+temp0 dw 0
+temp0 dw 0
+temp2 dw 0
+temp3 dw 0
+temp4 dw 0
+temp5 dw 0
+temp6 dw 0
+
+.code
+
+main proc
+
+MOV AX,@data ;
+MOV ds,AX ;
+MOV es,AX ;
+
+
+
+MOV AX,3;
+MOV BX,7;
+ADD AX,BX;
+
+MOV AX, temp0
+MOV i , AX;
+
+
+
+
+MOV AX,i;
+MOV BX,5;
+ADD AX,BX;
+
+MOV AX, temp3
+MOV j , AX;
+
+
+MOV AX, i;
+MUL j;
+MOV temp5, AX;
+
+MOV AX, temp5
+MOV k , AX;
+
+
+
+main endp
+end main

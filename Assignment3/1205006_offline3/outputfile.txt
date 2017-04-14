@@ -1,0 +1,50 @@
+type_specifier	: INT  
+declaration_list : ID LTHIRD CONST_INT RTHIRD
+a
+declaration_list : declaration_list COMMA ID
+c
+declaration_list : declaration_list COMMA ID
+i
+declaration_list : declaration_list COMMA ID
+j
+var_declaration	: type_specifier declaration_list SEMICOLON 
+type_specifier	: FLOAT
+declaration_list : ID
+d
+var_declaration	: var_declaration type_specifier declaration_list SEMICOLON
+factor	: CONST_INT
+0
+unary_expression : factor
+term : unary_expression
+simple_expression : term
+rel_expression	: simple_expression
+logic_expression : rel_expression
+expression : logic_expression
+variable : ID LTHIRD expression RTHIRD 
+a
+Array index: 0
+Array index insert: 0
+factor	: CONST_INT
+1
+unary_expression : factor
+term : unary_expression
+simple_expression : term
+rel_expression	: simple_expression
+logic_expression : rel_expression
+expression : variable ASSIGNOP logic_expression
+
+0->
+1-> <i, int , 0, >  ->
+2-> <j, int , 0, >  ->
+3->
+4->
+5->
+6-> <a, int , { 0, 0,  }>  ->
+7->
+8-> <c, int , 0, >  ->
+9-> <d, float , 0, >  ->
+10->
+11->
+12->
+
+Error Number 1 syntax error at line: 4
