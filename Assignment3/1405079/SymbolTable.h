@@ -14,8 +14,8 @@ class Function
 public:
 	string retype;
 	vector<SymbolInfo> params;
-	
 };
+
 class SymbolInfo
 {
 private:
@@ -72,6 +72,27 @@ public:
     void setType(const string &type) {
         SymbolInfo::type = type;
     }
+
+void Print()
+{
+cout<<"<--------Symbol Info:------>\n"<<"Name : "<<name<<endl;
+cout<<"Type : "<<type<<endl;
+cout<<"Ivalue : "<<ivalue<<endl;
+cout<<"Fvalue : "<<fvalue<<endl;
+cout<<"Char : "<<c<<endl;
+cout<<"ArraySize : "<<arraysize<<endl;
+if(fp!=NULL)
+{
+cout<<"Function :"<<endl;
+cout<<"Return Type: "<<fp->retype<<endl;
+cout<<"Params : start\n";
+for(int i=0;i<fp->params.size();i++)
+{
+cout<<fp->params[i].getName()<<" "<<fp->params[i].getType()<<endl;
+}
+cout<<"Params : end\n";
+}
+}
 };
 
 
@@ -112,7 +133,7 @@ public:
         {
             //cout<<"Inserted in ScopeTable# "<<id<<" at position "<<pos<<"," <<0<<endl;
             arr[pos]->next=new SymbolInfo(symbol.getName(),symbol.getType());
-	    Print();
+	    //Print();
             return true;
         }
         else
@@ -130,7 +151,7 @@ public:
             }
             //cout<<"Inserted in ScopeTable# "<<id<<" at position "<<pos<<"," <<count+1<<endl;
             currSymbol->next=new SymbolInfo(symbol.getName(),symbol.getType());
-	    Print();
+	    //Print();
             return true;
         }
 

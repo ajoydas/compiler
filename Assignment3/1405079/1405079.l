@@ -250,7 +250,7 @@ if(strcmp(yytext,";")==0)    	{
 <<EOF>> 	{
 			line_count--;
 			//st->PrintAllScopeTable();
-			fprintf(logout,"Total Lines: %d\n",line_count); 
+			//fprintf(logout,"Total Lines: %d\n",line_count); 
 			//fprintf(logout,"Total Errors: %d\n",error_count);
 			//st->FreeSpace();
 			return 0;

@@ -1,2 +1,4 @@
-int a(int b,int c);
-int a(int b,int c);
+void a(int b,float c);
+void a(int b){}
+void a(int b,int c){}
+int a(int b,float c){}

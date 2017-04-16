@@ -1,38 +1,100 @@
-Line No. 1: type_specifier : INT 
+Line No. 1: type_specifier : VOID
 
 Line No. 1: type_specifier : INT 
 
 Line No. 1: parameter_list  : type_specifier ID
+b
 
-Line No. 1: type_specifier : INT 
+Line No. 1: type_specifier : FLOAT
 
 Line No. 1: parameter_list  : parameter_list COMMA type_specifier ID
+c
 
 Line No. 1: func_declaration : type_specifier ID LPAREN parameter_list RPAREN SEMICOLON
-
-ScopeTable # 1
-5 -->  < a, function> 
+a
 
 Line No. 1: unit : func_declaration
 
 Line No. 1: program : unit
 
-Line No. 2: type_specifier : INT 
+Line No. 2: type_specifier : VOID
 
 Line No. 2: type_specifier : INT 
 
 Line No. 2: parameter_list  : type_specifier ID
+b
 
-Line No. 2: type_specifier : INT 
+Line No. 2: compound_statement : LCURL RCURL
 
-Line No. 2: parameter_list  : parameter_list COMMA type_specifier ID
+ScopeTable # 2
+0 -->  < b, int> 
+6 -->  < c, float> 
 
-Line No. 2: func_declaration : type_specifier ID LPAREN parameter_list RPAREN SEMICOLON
+ScopeTable # 1
+5 -->  < a, function> 
 
-Line No. 2: unit : func_declaration
+Line No. 2: func_definition : type_specifier ID LPAREN parameter_list RPAREN compound_statement
+a
+
+Line No. 2: unit : func_definition
 
 Line No. 2: program : program unit
 
-Total Lines: 1
-Line No. 1: start : program
+Line No. 3: type_specifier : VOID
+
+Line No. 3: type_specifier : INT 
+
+Line No. 3: parameter_list  : type_specifier ID
+b
+
+Line No. 3: type_specifier : INT 
+
+Line No. 3: parameter_list  : parameter_list COMMA type_specifier ID
+c
+
+Line No. 3: compound_statement : LCURL RCURL
+
+ScopeTable # 2
+0 -->  < b, int> 
+6 -->  < c, float> 
+
+ScopeTable # 1
+5 -->  < a, function> 
+
+Line No. 3: func_definition : type_specifier ID LPAREN parameter_list RPAREN compound_statement
+a
+
+Line No. 3: unit : func_definition
+
+Line No. 3: program : program unit
+
+Line No. 4: type_specifier : INT 
+
+Line No. 4: type_specifier : INT 
+
+Line No. 4: parameter_list  : type_specifier ID
+b
+
+Line No. 4: type_specifier : FLOAT
+
+Line No. 4: parameter_list  : parameter_list COMMA type_specifier ID
+c
+
+Line No. 4: compound_statement : LCURL RCURL
+
+ScopeTable # 2
+0 -->  < b, int> 
+6 -->  < c, float> 
+
+ScopeTable # 1
+5 -->  < a, function> 
+
+Line No. 4: func_definition : type_specifier ID LPAREN parameter_list RPAREN compound_statement
+a
+
+Line No. 4: unit : func_definition
+
+Line No. 4: program : program unit
+
+Line No. 3: start : program
 

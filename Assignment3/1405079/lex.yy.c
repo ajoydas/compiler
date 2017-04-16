@@ -1406,7 +1406,7 @@ case YY_STATE_EOF(ERR):
 {
 			line_count--;
 			//st->PrintAllScopeTable();
-			fprintf(logout,"Total Lines: %d\n",line_count); 
+			//fprintf(logout,"Total Lines: %d\n",line_count); 
 			//fprintf(logout,"Total Errors: %d\n",error_count);
 			//st->FreeSpace();
 			return 0;

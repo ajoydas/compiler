@@ -1,2 +1,6 @@
-Line No. 2: Multiple declaration Function a
+Line No. 2: Parameters Size Mismatch of Function a
+
+Line No. 3: Parameters Mismatch of Function a
+
+Line No. 4: Return-type Mismatch of Function a
 
