@@ -34,8 +34,8 @@ public:
     {
         this->name = "";
         this->type = "";
-		ivalue=0;
-		fvalue=0;
+		ivalue=-1e+007;
+		fvalue=-1e+007;
 		c=0;
         this->next = NULL;
 		this->fp=NULL;
@@ -47,8 +47,8 @@ public:
         this->name = name;
         this->type = type;
         this->next = next;
-		ivalue=0;
-		fvalue=0;
+		ivalue=-1e+007;
+		fvalue=-1e+007;
 		c=0;
         this->next = NULL;
 		this->fp=NULL;
@@ -232,7 +232,13 @@ cout<<"Arraysize: "<<currSymbol->arraysize<<endl;
 fprintf(logout,",{ ");
 for(int i=0;i<currSymbol->arraysize;i++)
 {
+if(currSymbol->type=="int"){
+fprintf(logout,"%d,",currSymbol->array[i]->ivalue);
+}
+else if(currSymbol->type=="float")
+{
 fprintf(logout,"%f,",currSymbol->array[i]->fvalue);
+}
 }
 fprintf(logout," }>\n");
 				}

@@ -1,165 +1,633 @@
-Line No. 1: type_specifier : INT 
+Line 1: type_specifier : INT 
 
-Line No. 1: parameter_list  : empty
+Line 1: parameter_list  : empty
 
-Line No. 3: type_specifier : INT 
+Line 2: type_specifier : INT 
 
-Line No. 3: program : unit
-
-
-
-Line No. 3: var_declaration	: type_specifier declaration_list SEMICOLON
-
-Line No. 3: statement  : var_declaration
-
-Line No. 3: statements : statement
-
-Line No. 4: variable : ID
-
-Line No. 4: factor : CONST_INT
-
-1
-
-Line No. 4: unary_expression : factor
-
-Line No. 4: term : unary_expression
-
-Line No. 4: simple_expression : term
-
-Line No. 4: rel_expression : simple_expression
-
-Line No. 4: logic_expression : rel_expression
-
-Line No. 4: expression : variable ASSINOP logic_expression
-
-Line No. 4: expression_statement	: expression SEMICOLON
-
-Line No. 4: statement : expression_statement
-
-Line No. 4: statements : statements statement
-
-Line No. 5: variable : ID
-
-Line No. 5: factor : CONST_INT
-
+Line 2: declaration_list : ID LTHIRD CONST_INT RTHIRD
+a
 2
 
-Line No. 5: unary_expression : factor
+Line 2: declaration_list : declaration_list COMMA ID
+c
 
-Line No. 5: term : unary_expression
+Line 2: declaration_list : declaration_list COMMA ID
+i
 
-Line No. 5: simple_expression : term
+Line 2: declaration_list : declaration_list COMMA ID
+j
 
-Line No. 5: rel_expression : simple_expression
+Line 2: var_declaration	: type_specifier declaration_list SEMICOLON
 
-Line No. 5: logic_expression : rel_expression
+Line 2: statement  : var_declaration
 
-Line No. 5: expression : variable ASSINOP logic_expression
+Line 2: statements : statement
 
-Line No. 5: expression_statement	: expression SEMICOLON
+Line 2: type_specifier : FLOAT
 
-Line No. 5: statement : expression_statement
+Line 2: declaration_list : ID
+d
 
-Line No. 5: statements : statements statement
+Line 2: var_declaration	: type_specifier declaration_list SEMICOLON
 
-Line No. 6: factor : CONST_INT
+Line 2: statement  : var_declaration
 
-0
+Line 2: statements : statements statement
 
-Line No. 6: unary_expression : factor
+Line 3: variable : ID
+d
 
-Line No. 6: term : unary_expression
+Line 3: factor : CONST_FLOAT
+3.141590
 
-Line No. 6: simple_expression : term
+Line 3: unary_expression : factor
 
-Line No. 6: rel_expression : simple_expression
+Line 3: term : unary_expression
 
-Line No. 6: logic_expression : rel_expression
+Line 3: simple_expression : term
 
-Line No. 6: expression : logic_expression
+Line 3: rel_expression : simple_expression
 
-Line No. 6: variable : ID LTHIRD expression RTHIRD
+Line 3: logic_expression : rel_expression
 
-Array index insert: 0
-
-Line No. 6: variable : ID
-
-Line No. 6: factor : variable
-
-Line No. 6: unary_expression : factor
-
-Line No. 6: term : unary_expression
-
-Line No. 6: simple_expression : term
-
-Line No. 6: rel_expression : simple_expression
-
-Line No. 6: logic_expression : rel_expression
-
-Line No. 6: expression : variable ASSINOP logic_expression
-
-Line No. 6: expression_statement	: expression SEMICOLON
-
-Line No. 6: statement : expression_statement
-
-Line No. 6: statements : statements statement
-
-Line No. 7: factor : CONST_INT
-
-1
-
-Line No. 7: unary_expression : factor
-
-Line No. 7: term : unary_expression
-
-Line No. 7: simple_expression : term
-
-Line No. 7: rel_expression : simple_expression
-
-Line No. 7: logic_expression : rel_expression
-
-Line No. 7: expression : logic_expression
-
-Line No. 7: variable : ID LTHIRD expression RTHIRD
-
-Array index insert: 0
-
-Line No. 7: variable : ID
-
-Line No. 7: factor : variable
-
-Line No. 7: unary_expression : factor
-
-Line No. 7: term : unary_expression
-
-Line No. 7: simple_expression : term
-
-Line No. 7: rel_expression : simple_expression
-
-Line No. 7: logic_expression : rel_expression
-
-Line No. 7: expression : variable ASSINOP logic_expression
-
-Line No. 7: expression_statement	: expression SEMICOLON
-
-Line No. 7: statement : expression_statement
-
-Line No. 7: statements : statements statement
-
-Line No. 8: compound_statement : LCURL RCURL
+Line 3: expression : variable ASSINOP logic_expression
 
 ScopeTable # 2
-5 -->  < a, int ,{ 0.000000,0.000000, }>
+0 -->  < i, int , -10000000 >
+1 -->  < d, float , 3.141590 >
+5 -->  < a, int ,{ -10000000,-10000000, }>
+6 -->  < c, int , -10000000 >
+ < j, int , -10000000 >
 
 ScopeTable # 1
 1 -->  < main, function >
 
-Line No. 8: func_definition : type_specifier ID LPAREN parameter_list RPAREN compound_statement
+Line 3: expression_statement	: expression SEMICOLON
+
+Line 3: statement : expression_statement
+
+Line 3: statements : statements statement
+
+Line 4: factor : CONST_INT
+0
+
+Line 4: unary_expression : factor
+
+Line 4: term : unary_expression
+
+Line 4: simple_expression : term
+
+Line 4: rel_expression : simple_expression
+
+Line 4: logic_expression : rel_expression
+
+Line 4: expression : logic_expression
+
+Line 4: variable : ID LTHIRD expression RTHIRD
+a
+
+Line 4: factor : CONST_INT
+1
+
+Line 4: unary_expression : factor
+
+Line 4: term : unary_expression
+
+Line 4: simple_expression : term
+
+Line 4: rel_expression : simple_expression
+
+Line 4: logic_expression : rel_expression
+
+Line 4: expression : variable ASSINOP logic_expression
+
+ScopeTable # 2
+0 -->  < i, int , -10000000 >
+1 -->  < d, float , 3.141590 >
+5 -->  < a, int ,{ 1,-10000000, }>
+6 -->  < c, int , -10000000 >
+ < j, int , -10000000 >
+
+ScopeTable # 1
+1 -->  < main, function >
+
+Line 4: expression_statement	: expression SEMICOLON
+
+Line 4: statement : expression_statement
+
+Line 4: statements : statements statement
+
+Line 5: factor : CONST_INT
+1
+
+Line 5: unary_expression : factor
+
+Line 5: term : unary_expression
+
+Line 5: simple_expression : term
+
+Line 5: rel_expression : simple_expression
+
+Line 5: logic_expression : rel_expression
+
+Line 5: expression : logic_expression
+
+Line 5: variable : ID LTHIRD expression RTHIRD
+a
+
+Line 5: factor : CONST_INT
+5
+
+Line 5: unary_expression : factor
+
+Line 5: term : unary_expression
+
+Line 5: simple_expression : term
+
+Line 5: rel_expression : simple_expression
+
+Line 5: logic_expression : rel_expression
+
+Line 5: expression : variable ASSINOP logic_expression
+
+ScopeTable # 2
+0 -->  < i, int , -10000000 >
+1 -->  < d, float , 3.141590 >
+5 -->  < a, int ,{ 1,5, }>
+6 -->  < c, int , -10000000 >
+ < j, int , -10000000 >
+
+ScopeTable # 1
+1 -->  < main, function >
+
+Line 5: expression_statement	: expression SEMICOLON
+
+Line 5: statement : expression_statement
+
+Line 5: statements : statements statement
+
+Line 6: variable : ID
+i
+
+Line 6: factor : CONST_INT
+0
+
+Line 6: unary_expression : factor
+
+Line 6: term : unary_expression
+
+Line 6: simple_expression : term
+
+Line 6: rel_expression : simple_expression
+
+Line 6: logic_expression : rel_expression
+
+Line 6: expression : variable ASSINOP logic_expression
+
+ScopeTable # 2
+0 -->  < i, int , 0 >
+1 -->  < d, float , 3.141590 >
+5 -->  < a, int ,{ 1,5, }>
+6 -->  < c, int , -10000000 >
+ < j, int , -10000000 >
+
+ScopeTable # 1
+1 -->  < main, function >
+
+Line 6: expression_statement	: expression SEMICOLON
+
+Line 6: variable : ID
+i
+
+Line 6: factor : variable
+
+Line 6: unary_expression : factor
+
+Line 6: term : unary_expression
+
+Line 6: simple_expression : term
+
+Line 6: factor : CONST_INT
+2
+
+Line 6: unary_expression : factor
+
+Line 6: term : unary_expression
+
+Line 6: simple_expression : term
+
+Line 6: rel_expression : simple_expression RELOP simple_expression
+
+Line 6: logic_expression : rel_expression
+
+Line 6: expression : logic_expression
+
+Line 6: expression_statement	: expression SEMICOLON
+
+Line 6: variable : ID
+i
+
+Line 6: variable : ID
+i
+
+Line 6: factor : variable
+
+Line 6: unary_expression : factor
+
+Line 6: term : unary_expression
+
+Line 6: simple_expression : term
+
+Line 6: factor : CONST_INT
+1
+
+Line 6: unary_expression : factor
+
+Line 6: term : unary_expression
+
+Line 6: simple_expression : simple_expression ADDOP term
+
+Line 6: rel_expression : simple_expression
+
+Line 6: logic_expression : rel_expression
+
+Line 6: expression : variable ASSINOP logic_expression
+
+ScopeTable # 2
+0 -->  < i, int , 1 >
+1 -->  < d, float , 3.141590 >
+5 -->  < a, int ,{ 1,5, }>
+6 -->  < c, int , -10000000 >
+ < j, int , -10000000 >
+
+ScopeTable # 1
+1 -->  < main, function >
+
+Line 7: variable : ID
+i
+
+Line 7: factor : variable
+
+Line 7: unary_expression : factor
+
+Line 7: term : unary_expression
+
+Line 7: simple_expression : term
+
+Line 7: factor : CONST_INT
+0
+
+Line 7: unary_expression : factor
+
+Line 7: term : unary_expression
+
+Line 7: simple_expression : term
+
+Line 7: rel_expression : simple_expression RELOP simple_expression
+
+Line 7: logic_expression : rel_expression
+
+Line 7: expression : logic_expression
+
+Line 8: factor : CONST_INT
+0
+
+Line 8: unary_expression : factor
+
+Line 8: term : unary_expression
+
+Line 8: simple_expression : term
+
+Line 8: rel_expression : simple_expression
+
+Line 8: logic_expression : rel_expression
+
+Line 8: expression : logic_expression
+
+Line 8: variable : ID LTHIRD expression RTHIRD
+a
+
+Line 8: factor : CONST_INT
+8
+
+Line 8: unary_expression : factor
+
+Line 8: term : unary_expression
+
+Line 8: simple_expression : term
+
+Line 8: variable : ID
+i
+
+Line 8: factor : variable
+
+Line 8: unary_expression : factor
+
+Line 8: term : unary_expression
+
+Line 8: simple_expression : simple_expression ADDOP term
+
+Line 8: rel_expression : simple_expression
+
+Line 8: logic_expression : rel_expression
+
+Line 8: expression : variable ASSINOP logic_expression
+
+ScopeTable # 3
+
+ScopeTable # 2
+0 -->  < i, int , 1 >
+1 -->  < d, float , 3.141590 >
+5 -->  < a, int ,{ 9,5, }>
+6 -->  < c, int , -10000000 >
+ < j, int , -10000000 >
+
+ScopeTable # 1
+1 -->  < main, function >
+
+Line 8: expression_statement	: expression SEMICOLON
+
+Line 8: statement : expression_statement
+
+Line 10: factor : CONST_INT
+1
+
+Line 10: unary_expression : factor
+
+Line 10: term : unary_expression
+
+Line 10: simple_expression : term
+
+Line 10: rel_expression : simple_expression
+
+Line 10: logic_expression : rel_expression
+
+Line 10: expression : logic_expression
+
+Line 10: variable : ID LTHIRD expression RTHIRD
+a
+
+Line 10: factor : CONST_INT
+7
+
+Line 10: unary_expression : factor
+
+Line 10: term : unary_expression
+
+Line 10: variable : ID
+i
+
+Line 10: factor : variable
+
+Line 10: unary_expression : factor
+
+Line 10: term : term MULOP unary_expression
+
+*
+
+Line 10: simple_expression : term
+
+Line 10: rel_expression : simple_expression
+
+Line 10: logic_expression : rel_expression
+
+Line 10: expression : variable ASSINOP logic_expression
+
+ScopeTable # 3
+
+ScopeTable # 2
+0 -->  < i, int , 1 >
+1 -->  < d, float , 3.141590 >
+5 -->  < a, int ,{ 9,7, }>
+6 -->  < c, int , -10000000 >
+ < j, int , -10000000 >
+
+ScopeTable # 1
+1 -->  < main, function >
+
+Line 10: expression_statement	: expression SEMICOLON
+
+Line 10: statement : expression_statement
+
+Line 10: statement : IF LPAREN expression RPAREN statement ELSE statement
+
+Line 10: statements : statement
+
+Line 11: compound_statement : LCURL statements RCURL
+
+ScopeTable # 3
+
+ScopeTable # 2
+0 -->  < i, int , 1 >
+1 -->  < d, float , 3.141590 >
+5 -->  < a, int ,{ 9,7, }>
+6 -->  < c, int , -10000000 >
+ < j, int , -10000000 >
+
+ScopeTable # 1
+1 -->  < main, function >
+
+Line 11: statement : compound_statement
+
+Line 11: statement : FOR LPAREN expression_statement expression_statement expression RPAREN statement
+
+Line 11: statements : statements statement
+
+Line 12: variable : ID
+c
+
+Line 12: factor : CONST_INT
+2
+
+Line 12: unary_expression : factor
+
+Line 12: term : unary_expression
+
+Line 12: simple_expression : term
+
+Line 12: rel_expression : simple_expression
+
+Line 12: logic_expression : rel_expression
+
+Line 12: expression : variable ASSINOP logic_expression
+
+ScopeTable # 2
+0 -->  < i, int , 1 >
+1 -->  < d, float , 3.141590 >
+5 -->  < a, int ,{ 9,7, }>
+6 -->  < c, int , 2 >
+ < j, int , -10000000 >
+
+ScopeTable # 1
+1 -->  < main, function >
+
+Line 12: expression_statement	: expression SEMICOLON
+
+Line 12: statement : expression_statement
+
+Line 12: statements : statements statement
+
+Line 13: variable : ID
+i
+
+Line 13: variable : ID
+c
+
+Line 13: factor : variable
+
+Line 13: unary_expression : factor
+
+Line 13: term : unary_expression
+
+Line 13: factor : CONST_INT
+5
+
+Line 13: unary_expression : factor
+
+Line 13: term : term MULOP unary_expression
+
+*
+
+Line 13: factor : CONST_INT
+1
+
+Line 13: unary_expression : factor
+
+Line 13: term : unary_expression
+
+Line 13: simple_expression : term
+
+Line 13: factor : CONST_INT
+3
+
+Line 13: unary_expression : factor
+
+Line 13: term : unary_expression
+
+Line 13: simple_expression : term
+
+Line 13: rel_expression : simple_expression RELOP simple_expression
+
+Line 13: factor : CONST_INT
+9
+
+Line 13: unary_expression : factor
+
+Line 13: term : unary_expression
+
+Line 13: simple_expression : term
+
+Line 13: rel_expression : simple_expression
+
+Line 13: logic_expression : rel_expression
+
+Line 13: expression : logic_expression
+
+Line 13: factor :  LPAREN expression RPAREN
+
+Line 13: unary_expression : factor
+
+Line 13: term : term MULOP unary_expression
+
+%
+
+Line 13: simple_expression : term
+
+Line 13: rel_expression : simple_expression
+
+Line 13: logic_expression : rel_expression
+
+Line 13: expression : variable ASSINOP logic_expression
+
+ScopeTable # 2
+0 -->  < i, int , 0 >
+1 -->  < d, float , 3.141590 >
+5 -->  < a, int ,{ 9,7, }>
+6 -->  < c, int , 2 >
+ < j, int , -10000000 >
+
+ScopeTable # 1
+1 -->  < main, function >
+
+Line 13: expression_statement	: expression SEMICOLON
+
+Line 13: statement : expression_statement
+
+Line 13: statements : statements statement
+
+Line 14: variable : ID
+j
+
+Line 14: factor : CONST_INT
+10
+
+Line 14: unary_expression : factor
+
+Line 14: term : unary_expression
+
+Line 14: simple_expression : term
+
+Line 14: rel_expression : simple_expression
+
+Line 14: logic_expression : rel_expression
+
+Line 14: expression : variable ASSINOP logic_expression
+
+ScopeTable # 2
+0 -->  < i, int , 0 >
+1 -->  < d, float , 3.141590 >
+5 -->  < a, int ,{ 9,7, }>
+6 -->  < c, int , 2 >
+ < j, int , 10 >
+
+ScopeTable # 1
+1 -->  < main, function >
+
+Line 14: expression_statement	: expression SEMICOLON
+
+Line 14: statement : expression_statement
+
+Line 14: statements : statements statement
+
+Line 15: factor : CONST_INT
+0
+
+Line 15: unary_expression : factor
+
+Line 15: term : unary_expression
+
+Line 15: simple_expression : term
+
+Line 15: rel_expression : simple_expression
+
+Line 15: logic_expression : rel_expression
+
+Line 15: expression : logic_expression
+
+Line 15: statement : RETURN expression SEMICOLON 
+
+Line 15: statements : statements statement
+
+Line 16: compound_statement : LCURL statements RCURL
+
+ScopeTable # 2
+0 -->  < i, int , 0 >
+1 -->  < d, float , 3.141590 >
+5 -->  < a, int ,{ 9,7, }>
+6 -->  < c, int , 2 >
+ < j, int , 10 >
+
+ScopeTable # 1
+1 -->  < main, function >
+
+Line 16: func_definition : type_specifier ID LPAREN parameter_list RPAREN compound_statement
 main
 
-Line No. 8: unit : func_definition
+Line 16: unit : func_definition
 
-Line No. 8: program : unit
+Line 16: program : unit
 
-Line No. 7: start : program
+Total Lines: 16
+
+Total Errors: 0
 

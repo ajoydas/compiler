@@ -69,26 +69,30 @@ UNTERMINATED_CHAR '[A-Za-z0-9]*|'
 
 
 {DIGIT}+ 	{
-				SymbolInfo *s=new  SymbolInfo(yytext,"CONST_INT");
+				SymbolInfo *s=new  SymbolInfo(yytext,"int");
+				s->Token="CONST_INT";
 				s->ivalue = atoi(yytext);
 				yylval = (YYSTYPE)s;
 				return CONST_INT;
 			}
 
 {FLOAT_NUMBER}	{
-				SymbolInfo *s=new  SymbolInfo(yytext,"CONST_FLOAT");
+				SymbolInfo *s=new  SymbolInfo(yytext,"float");
+				s->Token="CONST_FLOAT";
 				s->fvalue = atof(yytext);
+				cout<<"CONST_FLOAT : "<<yytext<<" "<<s->fvalue<<endl;
 				yylval = (YYSTYPE)s;
 				return CONST_FLOAT;
 			}
 {CHARACTER}	{
-				SymbolInfo *s = new  SymbolInfo(yytext,"CHAR_CONST");
+				SymbolInfo *s = new  SymbolInfo(yytext,"char");
+				s->Token="CHAR_CONST";
 				s->c = yytext[1];
 				yylval = (YYSTYPE)s;
 				return CONST_CHAR;
 			}
 {CHARACTER_EX}	{
-				SymbolInfo *s = new  SymbolInfo(yytext,"CHAR_CONST");
+				SymbolInfo *s = new  SymbolInfo(yytext,"char");
 				for(int i=0;i<10;i++)
 				{
 				    if(yytext[2]==arrchar[i][0]){
@@ -96,23 +100,28 @@ UNTERMINATED_CHAR '[A-Za-z0-9]*|'
 					    break;
 				    }
 				}
+				s->Token="CHAR_CONST";
 				yylval = (YYSTYPE)s;
 				return CONST_CHAR;
 			}
 
 {IDENTIFIER}	{
-				SymbolInfo *s=new  SymbolInfo(yytext,"ID");
+				SymbolInfo *s=new  SymbolInfo(yytext,"");
+				s->Token="ID";
+				cout<<"Id = "<< s->getName()<<endl;
 				yylval = (YYSTYPE)s;
 				return ID;
 			}
 
 [+-]		{
-			SymbolInfo *s= new  SymbolInfo(yytext,"ADDOP");
+			SymbolInfo *s= new  SymbolInfo(yytext,"");
+			s->Token="ADDOP";
 			yylval = (YYSTYPE)s;
 			return ADDOP;
 			}
 [*/%]		{
-			SymbolInfo *s= new  SymbolInfo(yytext,"MULOP");
+			SymbolInfo *s= new  SymbolInfo(yytext,"");
+			s->Token="MULOP";
 			yylval = (YYSTYPE)s;
 			return MULOP;
 			}
@@ -120,11 +129,20 @@ UNTERMINATED_CHAR '[A-Za-z0-9]*|'
 
 "--"		{ return DECOP; }
 
-"<"|"<="|">"|">="|"=="|"!="		{ return RELOP; }
+"<"|"<="|">"|">="|"=="|"!="		{ 
+			SymbolInfo *s= new  SymbolInfo(yytext,"");
+			s->Token="RELOP";
+			yylval = (YYSTYPE)s;
+			return RELOP; }
 
 "="		{ return ASSINOP; }
 
-"&&"|"||"		{ return LOGICOP; }
+"&&"|"||"		{ 
+			SymbolInfo *s= new  SymbolInfo(yytext,"");
+			s->Token="LOGICOP";
+			yylval = (YYSTYPE)s;
+			return LOGICOP; 
+		}
 
 "!"		{ return NOT; }
 
@@ -248,7 +266,7 @@ if(strcmp(yytext,";")==0)    	{
 <ERR>.    {}
 
 <<EOF>> 	{
-			line_count--;
+			//line_count--;
 			//st->PrintAllScopeTable();
 			//fprintf(logout,"Total Lines: %d\n",line_count); 
 			//fprintf(logout,"Total Errors: %d\n",error_count);

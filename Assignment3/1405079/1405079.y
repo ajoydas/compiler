@@ -25,7 +25,7 @@ vector<SymbolInfo> params,args;
 
 void yyerror(string s){
 	errorcount++;
-fprintf(error,"Line No. %d: Error Number %d %s program\n\n",line_count,errorcount,s.c_str());
+fprintf(error,"Line %d: Error Number %d %s \n\n",line_count,errorcount,s.c_str());
 }
 
 %}
@@ -39,43 +39,45 @@ fprintf(error,"Line No. %d: Error Number %d %s program\n\n",line_count,errorcoun
 
 start : program
 	{
-		fprintf(logout,"Line No. %d: start : program\n\n",line_count);
+		//fprintf(logout,"Line %d: start : program\n\n",line_count);
+		fprintf(logout,"Total Lines: %d\n\nTotal Errors: %d\n\n",line_count,errorcount);
+
 	}
 	;
 
 program : program unit
 	{
-		fprintf(logout,"Line No. %d: program : program unit\n\n",line_count);
+		fprintf(logout,"Line %d: program : program unit\n\n",line_count);
 	} 
 	| 
 	unit
 	{
-		fprintf(logout,"Line No. %d: program : unit\n\n",line_count);
+		fprintf(logout,"Line %d: program : unit\n\n",line_count);
 	}
 	;
 	
 unit :var_declaration
 		{
-			fprintf(logout,"Line No. %d: unit : var_declaration\n\n",line_count);
+			fprintf(logout,"Line %d: unit : var_declaration\n\n",line_count);
 		}
      	| 
      	func_declaration
      	{ 
 /**/
-			fprintf(logout,"Line No. %d: unit : func_declaration\n\n",line_count);
+			fprintf(logout,"Line %d: unit : func_declaration\n\n",line_count);
 
      	}
      	| 
      	func_definition
      	{
-			fprintf(logout,"Line No. %d: unit : func_definition\n\n",line_count);
+			fprintf(logout,"Line %d: unit : func_definition\n\n",line_count);
      	}
      	;
      
 func_declaration : type_specifier ID LPAREN parameter_list RPAREN SEMICOLON
 	{
 
-		fprintf(logout,"Line No. %d: func_declaration : type_specifier ID LPAREN parameter_list RPAREN SEMICOLON\n",line_count);
+		fprintf(logout,"Line %d: func_declaration : type_specifier ID LPAREN parameter_list RPAREN SEMICOLON\n",line_count);
 fprintf(logout,"%s\n\n",$2->getName().c_str());
 		//cout<<"func_declaration :$1= "<<$1->getName()<<endl;
 		//functype=$1->getName();
@@ -90,7 +92,7 @@ fprintf(logout,"%s\n\n",$2->getName().c_str());
 		} 
 		else
 		{
-			fprintf(error,"Line No. %d: Multiple declaration Function %s\n\n",line_count,$2->getName().c_str());
+			fprintf(error,"Line %d: Multiple declaration Function %s\n\n",line_count,$2->getName().c_str());
 		}
 		fn=NULL;
 		params.clear();
@@ -116,23 +118,23 @@ func_definition : type_specifier ID LPAREN parameter_list RPAREN
 		else
 		{
 			fn=si->fp;
-			//fprintf(error,"Line No. %d: Multiple declaration Function %s\n\n",line_count,$2->getName().c_str());
+			//fprintf(error,"Line %d: Multiple declaration Function %s\n\n",line_count,$2->getName().c_str());
 			if(si->fp->retype==$1->getName())
 			{
 				if(si->fp->params.size()!=params.size())
-				{fprintf(error,"Line No. %d: Parameters Size Mismatch of Function %s\n\n",line_count,$2->getName().c_str());	}
+				{fprintf(error,"Line %d: Parameters Size Mismatch of Function %s\n\n",line_count,$2->getName().c_str());	}
 				else{
 					for(int i=0;i<si->fp->params.size();i++)
 					{
 						if(si->fp->params[i].getName()!=params[i].getName()||si->fp->params[i].getType()!=params[i].getType())
 						{
-							fprintf(error,"Line No. %d: Parameters Mismatch of Function %s\n\n",line_count,$2->getName().c_str());					
+							fprintf(error,"Line %d: Parameters Mismatch of Function %s\n\n",line_count,$2->getName().c_str());					
 						}
 					}
 				}
 			}
 			else{
-				fprintf(error,"Line No. %d: Return-type Mismatch of Function %s\n\n",line_count,$2->getName().c_str());
+				fprintf(error,"Line %d: Return-type Mismatch of Function %s\n\n",line_count,$2->getName().c_str());
 			}
 		}
 
@@ -140,14 +142,14 @@ func_definition : type_specifier ID LPAREN parameter_list RPAREN
 		params.clear();
 
 } compound_statement {
-		fprintf(logout,"Line No. %d: func_definition : type_specifier ID LPAREN parameter_list RPAREN compound_statement\n",line_count);
+		fprintf(logout,"Line %d: func_definition : type_specifier ID LPAREN parameter_list RPAREN compound_statement\n",line_count);
 fprintf(logout,"%s\n\n",$2->getName().c_str());
 }
  		 	;
  		 
 parameter_list  : parameter_list COMMA type_specifier ID
 {
-	fprintf(logout,"Line No. %d: parameter_list  : parameter_list COMMA type_specifier ID\n",line_count);
+	fprintf(logout,"Line %d: parameter_list  : parameter_list COMMA type_specifier ID\n",line_count);
 	fprintf(logout,"%s\n\n",$4->getName().c_str());
 	SymbolInfo sym($4->getName(),type);
 	params.push_back(sym);
@@ -155,12 +157,12 @@ parameter_list  : parameter_list COMMA type_specifier ID
 
 	| parameter_list COMMA type_specifier	 
 {
-	fprintf(logout,"Line No. %d: parameter_list  : parameter_list COMMA type_specifier\n\n",line_count);
+	fprintf(logout,"Line %d: parameter_list  : parameter_list COMMA type_specifier\n\n",line_count);
 }
 
  	| type_specifier ID
 {
-	fprintf(logout,"Line No. %d: parameter_list  : type_specifier ID\n",line_count);
+	fprintf(logout,"Line %d: parameter_list  : type_specifier ID\n",line_count);
 	fprintf(logout,"%s\n\n",$2->getName().c_str());
 	SymbolInfo sym($2->getName(),type);
 	params.push_back(sym );
@@ -168,12 +170,12 @@ parameter_list  : parameter_list COMMA type_specifier ID
 
  	| type_specifier
 {
- 	fprintf(logout,"Line No. %d: parameter_list  : type_specifier\n\n",line_count);
+ 	fprintf(logout,"Line %d: parameter_list  : type_specifier\n\n",line_count);
 }
 
 	|
 {
-	fprintf(logout,"Line No. %d: parameter_list  : empty\n\n",line_count);
+	fprintf(logout,"Line %d: parameter_list  : empty\n\n",line_count);
 }
  		;
 
@@ -193,7 +195,7 @@ compound_statement :LCURL
 		}
 	} 
 statements RCURL { 
-		 fprintf(logout,"Line No. %d: compound_statement : LCURL RCURL\n\n",line_count);
+		 fprintf(logout,"Line %d: compound_statement : LCURL statements RCURL\n\n",line_count);
 		 table->PrintAllScopeTable();
 		 table->ExitScope();
 	}
@@ -212,22 +214,22 @@ statements RCURL {
 		}
 	}
 	RCURL { 
-		 fprintf(logout,"Line No. %d: compound_statement : LCURL RCURL\n\n",line_count);
+		 fprintf(logout,"Line %d: compound_statement : LCURL RCURL\n\n",line_count);
 		 table->PrintAllScopeTable();
 		 table->ExitScope();
 	}
 		   ;
 
-var_declaration	: type_specifier declaration_list SEMICOLON { fprintf(logout,"Line No. %d: var_declaration	: type_specifier declaration_list SEMICOLON\n\n",line_count); }
+var_declaration	: type_specifier declaration_list SEMICOLON { fprintf(logout,"Line %d: var_declaration	: type_specifier declaration_list SEMICOLON\n\n",line_count); }
 
-type_specifier	: INT  { fprintf(logout,"Line No. %d: type_specifier : INT \n\n",line_count); type="int"; $$=new SymbolInfo("int","type"); }
-		| FLOAT { fprintf(logout,"Line No. %d: type_specifier : FLOAT\n\n",line_count); type="float";$$=new SymbolInfo("float","type"); }
-		| VOID { fprintf(logout,"Line No. %d: type_specifier : VOID\n\n",line_count); type="void";$$=new SymbolInfo("void","type"); }
+type_specifier	: INT  { fprintf(logout,"Line %d: type_specifier : INT \n\n",line_count); type="int"; $$=new SymbolInfo("int",type); }
+		| FLOAT { fprintf(logout,"Line %d: type_specifier : FLOAT\n\n",line_count); type="float";$$=new SymbolInfo("float",type); }
+		| VOID { fprintf(logout,"Line %d: type_specifier : VOID\n\n",line_count); type="void";$$=new SymbolInfo("void",type); }
 		;
 
 declaration_list : declaration_list COMMA ID  { 
-				fprintf(logout,"Line No. %d: declaration_list : declaration_list COMMA ID\n",line_count);
-				fprintf(logout,"%s\n\n",$3->getName());
+				fprintf(logout,"Line %d: declaration_list : declaration_list COMMA ID\n",line_count);
+				fprintf(logout,"%s\n\n",$3->getName().c_str());
 				if(type == "int"){
 					
 					SymbolInfo* s = new SymbolInfo($3->getName(), "int");
@@ -250,8 +252,8 @@ declaration_list : declaration_list COMMA ID  {
 				
 			}
 		 | declaration_list COMMA ID LTHIRD CONST_INT RTHIRD { 
-				fprintf(logout,"Line No. %d: declaration_list : declaration_list COMMA ID LTHIRD CONST_INT RTHIRD\n",line_count);
-				fprintf(logout,"%s\n\n",$3->getName());
+				fprintf(logout,"Line %d: declaration_list : declaration_list COMMA ID LTHIRD CONST_INT RTHIRD\n",line_count);
+				fprintf(logout,"%s\n%d\n\n",$3->getName().c_str(),$5->ivalue);
 				if(type == "int"){
 					SymbolInfo* s = new SymbolInfo($3->getName(), "int");
 					s-> Token = "ID";
@@ -286,8 +288,8 @@ s->array[i]=new SymbolInfo("","float");
 				}
 			}
 		 | ID  {
-				fprintf(logout,"Line No. %d: declaration_list : ID\n",line_count);
-				fprintf(logout,"%s\n\n",$1->getName());
+				fprintf(logout,"Line %d: declaration_list : ID\n",line_count);
+				fprintf(logout,"%s\n\n",$1->getName().c_str());
 				if(type == "int"){
 					SymbolInfo* s = new SymbolInfo($1->getName(), "int");
 					s-> Token = "ID";
@@ -307,8 +309,8 @@ s->array[i]=new SymbolInfo("","float");
 				}
 			}
 		 | ID LTHIRD CONST_INT RTHIRD  { 
-				fprintf(logout,"Line No. %d: program : unit\n\n",line_count);
-				fprintf(logout,"%s\n\n",$1->getName());
+				fprintf(logout,"Line %d: declaration_list : ID LTHIRD CONST_INT RTHIRD\n",line_count);
+				fprintf(logout,"%s\n%d\n\n",$1->getName().c_str(),$3->ivalue);
 				
 				if(type == "int"){
 					SymbolInfo* s = new SymbolInfo($1->getName(), "int");
@@ -326,7 +328,7 @@ s->array[i]=new SymbolInfo("element","int");
 					}
 				}
 				if(type == "float"){
-					SymbolInfo* s = new SymbolInfo($1->name, "int");
+					SymbolInfo* s = new SymbolInfo($1->name, "float");
 					s-> Token = "ID";
 					s->arraysize = $3->ivalue;
 s->array=new SymbolInfo*[s->arraysize];
@@ -344,30 +346,31 @@ s->array[i]=new SymbolInfo("","float");
 			}
 		 ;
 
-statements : statement  { fprintf(logout,"Line No. %d: statements : statement\n\n",line_count); }
-	   | statements statement  { fprintf(logout,"Line No. %d: statements : statements statement\n\n",line_count); }
+statements : statement  { fprintf(logout,"Line %d: statements : statement\n\n",line_count); }
+	   | statements statement  { fprintf(logout,"Line %d: statements : statements statement\n\n",line_count); }
 	   ;
 
 
 statement  : var_declaration { 
-fprintf(logout,"Line No. %d: statement  : var_declaration\n\n",line_count);
+fprintf(logout,"Line %d: statement  : var_declaration\n\n",line_count);
 }
-	   | expression_statement  {fprintf(logout,"Line No. %d: statement : expression_statement\n\n",line_count); }
-	   | compound_statement  { fprintf(logout,"Line No. %d: statement : compound_statement\n\n",line_count); }
-	   | FOR LPAREN expression_statement expression_statement expression RPAREN statement  { fprintf(logout,"Line No. %d: statement : FOR LPAREN expression_statement expression_statement expression RPAREN statement\n\n",line_count); }
-	   | IF LPAREN expression RPAREN statement %prec only_if { fprintf(logout,"Line No. %d: statement :  IF LPAREN expression RPAREN statement\n\n",line_count); }
-	   | IF LPAREN expression RPAREN statement ELSE statement { fprintf(logout,"Line No. %d: statement : IF LPAREN expression RPAREN statement ELSE statement\n\n",line_count); }
-	   | WHILE LPAREN expression RPAREN statement  { fprintf(logout,"Line No. %d: statement : WHILE LPAREN expression RPAREN statement\n\n",line_count); }
-	   | PRINTLN LPAREN ID RPAREN SEMICOLON  { fprintf(logout,"Line No. %d: statement : PRINTLN LPAREN ID RPAREN SEMICOLON\n\n",line_count); }
-	   | RETURN expression SEMICOLON  { fprintf(logout,"Line No. %d: statement : RETURN expression SEMICOLON \n\n",line_count); }
+	   | expression_statement  {fprintf(logout,"Line %d: statement : expression_statement\n\n",line_count); }
+	   | compound_statement  { fprintf(logout,"Line %d: statement : compound_statement\n\n",line_count); }
+	   | FOR LPAREN expression_statement expression_statement expression RPAREN statement  { fprintf(logout,"Line %d: statement : FOR LPAREN expression_statement expression_statement expression RPAREN statement\n\n",line_count); }
+	   | IF LPAREN expression RPAREN statement %prec only_if { fprintf(logout,"Line %d: statement :  IF LPAREN expression RPAREN statement\n\n",line_count); }
+	   | IF LPAREN expression RPAREN statement ELSE statement { fprintf(logout,"Line %d: statement : IF LPAREN expression RPAREN statement ELSE statement\n\n",line_count); }
+	   | WHILE LPAREN expression RPAREN statement  { fprintf(logout,"Line %d: statement : WHILE LPAREN expression RPAREN statement\n\n",line_count); }
+	   | PRINTLN LPAREN ID RPAREN SEMICOLON  { fprintf(logout,"Line %d: statement : PRINTLN LPAREN ID RPAREN SEMICOLON\n\n",line_count); }
+	   | RETURN expression SEMICOLON  { fprintf(logout,"Line %d: statement : RETURN expression SEMICOLON \n\n",line_count); }
 	   ;
 		
-expression_statement	: SEMICOLON		 { fprintf(logout,"Line No. %d: expression_statement	: SEMICOLON\n\n",line_count); }	
-			| expression SEMICOLON  { fprintf(logout,"Line No. %d: expression_statement	: expression SEMICOLON\n\n",line_count); cout<<"Variable : "<<$1->name<<" "<<$1->ivalue<<endl;}
+expression_statement	: SEMICOLON		 { fprintf(logout,"Line %d: expression_statement	: SEMICOLON\n\n",line_count); }	
+			| expression SEMICOLON  { fprintf(logout,"Line %d: expression_statement	: expression SEMICOLON\n\n",line_count); cout<<"Variable : "<<$1->name<<" "<<$1->ivalue<<endl;}
 			;
 						
 variable : ID	{ 
-			fprintf(logout,"Line No. %d: variable : ID\n\n",line_count);
+			fprintf(logout,"Line %d: variable : ID\n",line_count);
+			fprintf(logout,"%s\n\n",$1->getName().c_str());
 			SymbolInfo* temp = table->Lookup($1->getName());
 			if (temp == NULL){
 				yyerror("Undeclared variable! ");
@@ -375,7 +378,8 @@ variable : ID	{
 			else $$ = temp;
 		}
 		| ID LTHIRD expression RTHIRD  {
-			fprintf(logout,"Line No. %d: variable : ID LTHIRD expression RTHIRD\n\n",line_count);
+			fprintf(logout,"Line %d: variable : ID LTHIRD expression RTHIRD\n",line_count);
+			fprintf(logout,"%s\n\n",$1->getName().c_str());
 			cout<<$1->getName()<<endl;
 			SymbolInfo* temp = table->Lookup($1->getName());
 			if (temp == NULL){
@@ -389,7 +393,7 @@ cout<<"Temp Array Size = "<<temp->arraysize<<endl;
 				}
 				else {
 					$$ = temp->array[$3->ivalue];
-					fprintf(logout,"Array index insert: %d\n\n",$$->ivalue);
+					//fprintf(logout,"Array index insert: %d\n\n",$$->ivalue);
 				}
 				
 			}
@@ -397,36 +401,42 @@ cout<<"Temp Array Size = "<<temp->arraysize<<endl;
 	 ;
 			
 expression : logic_expression {
-			fprintf(logout,"Line No. %d: expression : logic_expression\n\n",line_count);
+			fprintf(logout,"Line %d: expression : logic_expression\n\n",line_count);
 			$$ = $1;
 		}
 	    | variable ASSINOP logic_expression 	 { 
-			fprintf(logout,"Line No. %d: expression : variable ASSINOP logic_expression\n\n",line_count);
+			fprintf(logout,"Line %d: expression : variable ASSINOP logic_expression\n\n",line_count);
 			//Print the symboltable here
-			cout<<$3->ivalue<<endl;
 			cout<<"Variable : "<<$1->name<<" "<<$1->ivalue<<" "<<$1->type<<endl;
+			cout<<"Variable : "<<$3->name<<" "<<$3->ivalue<<" "<<$3->type<<endl;
 			if($1->type == "int"){
 				if($3->type == "int"){
 					$1->ivalue = $3->ivalue;
 				}
-				if($3->type == "float"){
-					$1->ivalue = $3->fvalue;
-				}
-				if($3->type == "char"){
+				else if($3->type == "char"){
 					$1->ivalue = $3->c;
+				}
+				else {
+					yyerror("Type Mismatch");
 				}
 			}
 			else if($1->type == "float"){
 				if($3->type == "int"){
 					$1->fvalue = $3->ivalue;
 				}
-				if($3->type == "float"){
+				else if($3->type == "float"){
 					$1->fvalue = $3->fvalue;
 				}
-				if($3->type == "char"){
+				else if($3->type == "char"){
 					$1->fvalue = $3->c;
 				}
+				else {
+					yyerror("Type Mismatch");
+				}
 			}
+			else {
+					yyerror("Type Mismatch");
+				}
 			/*else if($1->type == "char"){
 				if($3->type == "int"){
 					$1->c = $3->ivalue;
@@ -440,16 +450,16 @@ expression : logic_expression {
 			}*/
 			cout<<"After assign: "<<$1->ivalue<<endl;
 			$$ = $1;
-			//table->printTable(fout);
+			table->PrintAllScopeTable();
 		}
 	   ;
 			
 logic_expression : rel_expression 	 { 
-			fprintf(logout,"Line No. %d: logic_expression : rel_expression\n\n",line_count);
+			fprintf(logout,"Line %d: logic_expression : rel_expression\n\n",line_count);
 			$$ = $1;
 		}
 		| rel_expression LOGICOP rel_expression 	 { 
-			fprintf(logout,"Line No. %d: logic_expression : rel_expression\n\n",line_count);
+			fprintf(logout,"Line %d: logic_expression : rel_expression\n\n",line_count);
 			SymbolInfo* s = new SymbolInfo();
 			s->type = "int";
 			
@@ -485,11 +495,11 @@ logic_expression : rel_expression 	 {
 		;
 			
 rel_expression	: simple_expression  { 
-			fprintf(logout,"Line No. %d: rel_expression : simple_expression\n\n",line_count);
+			fprintf(logout,"Line %d: rel_expression : simple_expression\n\n",line_count);
 			$$ = $1;
 		}
 		| simple_expression RELOP simple_expression	 { 
-			fprintf(logout,"Line No. %d: rel_expression : simple_expression RELOP simple_expression\n\n",line_count);
+			fprintf(logout,"Line %d: rel_expression : simple_expression RELOP simple_expression\n\n",line_count);
 			SymbolInfo* s = new SymbolInfo();
 			s->type = "int";
 			if($2->name == "=="){
@@ -546,11 +556,11 @@ rel_expression	: simple_expression  {
 		;
 				
 simple_expression : term  { 
-			fprintf(logout,"Line No. %d: simple_expression : term\n\n",line_count);
+			fprintf(logout,"Line %d: simple_expression : term\n\n",line_count);
 			$$ = $1;
 		}
 		| simple_expression ADDOP term  { 
-			fprintf(logout,"Line No. %d: simple_expression : simple_expression ADDOP term\n\n",line_count);
+			fprintf(logout,"Line %d: simple_expression : simple_expression ADDOP term\n\n",line_count);
 			SymbolInfo* s = new SymbolInfo();
 			if($2->name == "+"){
 				if($1->type == "int" && $3->type == "int"){
@@ -657,12 +667,13 @@ simple_expression : term  {
 		;
 					
 term :	unary_expression { 
-			fprintf(logout,"Line No. %d: term : unary_expression\n\n",line_count);
+			fprintf(logout,"Line %d: term : unary_expression\n\n",line_count);
 			$$ = $1;
 		}
      |  term MULOP unary_expression { 
-			fprintf(logout,"Line No. %d: term : term MULOP unary_expression\n\n",line_count);
+			fprintf(logout,"Line %d: term : term MULOP unary_expression\n\n",line_count);
 						SymbolInfo* s = new SymbolInfo();
+fprintf(logout,"%s\n\n",$2->name.c_str());
 			if($2->name == "*"){
 				if($1->type == "int" && $3->type == "int"){
 					s->ivalue = $1->ivalue * $3->ivalue;
@@ -767,8 +778,11 @@ term :	unary_expression {
 			}
 			//mod
 			else if($2->name == "%"){
+				cout<<"Mod Variable : "<<$1->name<<" "<<$1->ivalue<<" "<<$1->type<<endl;
+				cout<<"Mod Variable : "<<$3->name<<" "<<$3->ivalue<<" "<<$3->type<<endl;
 				if($1->type == "int" && $3->type == "int"){
 					s->ivalue = $1->ivalue % $3->ivalue;
+					cout<<s->ivalue<<endl;
 					s->type = "int";
 					$$ = s;
 				}
@@ -812,7 +826,7 @@ term :	unary_expression {
      ;
 
 unary_expression : ADDOP unary_expression   { 
-				fprintf(logout,"Line No. %d: unary_expression : ADDOP unary_expression\n\n",line_count);
+				fprintf(logout,"Line %d: unary_expression : ADDOP unary_expression\n\n",line_count);
 				if($2->name == "+"){
 					$$ = $2;
 				}
@@ -829,7 +843,7 @@ unary_expression : ADDOP unary_expression   {
 				}
 			}
 		 | NOT unary_expression  { 
-				fprintf(logout,"Line No. %d: unary_expression : NOT unary_expression\n\n",line_count);
+				fprintf(logout,"Line %d: unary_expression : NOT unary_expression\n\n",line_count);
 				SymbolInfo* temp = new SymbolInfo();
 				if(type == "int"){
 					if($2->ivalue) {
@@ -858,18 +872,18 @@ unary_expression : ADDOP unary_expression   {
 				$$ = temp;
 			}
 		 | factor  { 
-				fprintf(logout,"Line No. %d: unary_expression : factor\n\n",line_count);
+				fprintf(logout,"Line %d: unary_expression : factor\n\n",line_count);
 				$$ = $1;
 			}
 		 ;
 	
 factor	: variable  { 
-			fprintf(logout,"Line No. %d: factor : variable\n\n",line_count);
+			fprintf(logout,"Line %d: factor : variable\n\n",line_count);
 			$$=$1;
 		}
 	| ID LPAREN argument_list RPAREN { //ajoy have to do
 
-fprintf(logout,"Line No. %d: factor : ID LPAREN argument_list RPAREN\n\n",line_count);
+fprintf(logout,"Line %d: factor : ID LPAREN argument_list RPAREN\n\n",line_count);
 SymbolInfo * s=table->Lookup($1->name);
 if(s!=NULL)
 {
@@ -883,51 +897,52 @@ else
 
 if(s->fp->params.size()!=args.size())
 {
-fprintf(error,"Line No. %d: Parameters Size Mismatch of Function Call %s\n\n",line_count,$1->getName().c_str());	
+fprintf(error,"Line %d: Parameters Size Mismatch of Function Call %s\n\n",line_count,$1->getName().c_str());	
 }
 else{
 	for(int i=0;i<s->fp->params.size();i++)
 	{
 		if(s->fp->params[i].getType()!=args[i].getType())
 		{
-			fprintf(error,"Line No. %d: Parameters Mismatch of Function Call %s\n\n",line_count,$1->getName().c_str());					
+			fprintf(error,"Line %d: Parameters Mismatch of Function Call %s\n\n",line_count,$1->getName().c_str());					
 		}
 	}
 }
+
+SymbolInfo* si = new SymbolInfo($1->name,s->fp->retype);
+si->ivalue=0;
+si->fvalue=0;
+$$=si;
 }
 }
 else
 {
 yyerror("Undeclared Function "+$1->name+" call!");
 }
-
-SymbolInfo* si = new SymbolInfo($1->name,"int");
-si->ivalue=0;
-$$=si;
 args.clear();
 	}
 
 	| LPAREN expression RPAREN  { 
-			fprintf(logout,"Line No. %d: factor :  LPAREN expression RPAREN\n\n",line_count);
+			fprintf(logout,"Line %d: factor :  LPAREN expression RPAREN\n\n",line_count);
 			$$ = $2;
 		}
 	| CONST_INT  { 
-			fprintf(logout,"Line No. %d: factor : CONST_INT\n\n",line_count);
+			fprintf(logout,"Line %d: factor : CONST_INT\n",line_count);
 			fprintf(logout,"%d\n\n",$1->ivalue);
 			$$ = $1;
 		}
 	| CONST_FLOAT { 
-			fprintf(logout,"Line No. %d: factor : CONST_FLOAT\n",line_count);
-			fprintf(logout,"%d\n\n",$1->fvalue);
+			fprintf(logout,"Line %d: factor : CONST_FLOAT\n",line_count);
+			fprintf(logout,"%lf\n\n",$1->fvalue);
 			$$ = $1;
 		}
 	| CONST_CHAR { 
-			fprintf(logout,"Line No. %d: factor : CONST_CHAR\n\n",line_count);
+			fprintf(logout,"Line %d: factor : CONST_CHAR\n",line_count);
 			fprintf(logout,"%c\n\n",$1->c);
 			$$ = $1;
 		}
 	| variable INCOP  { 
-			fprintf(logout,"Line No. %d: factor : variable INCOP\n\n",line_count);
+			fprintf(logout,"Line %d: factor : variable INCOP\n\n",line_count);
 			if(type == "int"){
 				$1->ivalue++;
 			}
@@ -939,7 +954,7 @@ args.clear();
 			}
 		}
 	| variable DECOP {  
-			fprintf(logout,"Line No. %d: factor : variable DECOP\n\n",line_count);
+			fprintf(logout,"Line %d: factor : variable DECOP\n\n",line_count);
 			if(type == "int"){
 				$1->ivalue--;
 			}
@@ -954,17 +969,17 @@ args.clear();
 
 argument_list : argument_list COMMA logic_expression
 {
-fprintf(logout,"Line No. %d: argument_list : argument_list COMMA logic_expression\n\n",line_count);
+fprintf(logout,"Line %d: argument_list : argument_list COMMA logic_expression\n\n",line_count);
 args.push_back(*($3));
 }
 	      | logic_expression
 {
-fprintf(logout,"Line No. %d: argument_list : logic_expression\n\n",line_count);
+fprintf(logout,"Line %d: argument_list : logic_expression\n\n",line_count);
 args.push_back(*($1));
 }
 	      |
 {
-fprintf(logout,"Line No. %d: argument_list : empty\n\n",line_count);
+fprintf(logout,"Line %d: argument_list : empty\n\n",line_count);
 }
 	      ;
 		

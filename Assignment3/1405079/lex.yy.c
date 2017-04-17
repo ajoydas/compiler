@@ -1064,7 +1064,8 @@ case 18:
 YY_RULE_SETUP
 #line 71 "1405079.l"
 {
-				SymbolInfo *s=new  SymbolInfo(yytext,"CONST_INT");
+				SymbolInfo *s=new  SymbolInfo(yytext,"int");
+				s->Token="CONST_INT";
 				s->ivalue = atoi(yytext);
 				yylval = (YYSTYPE)s;
 				return CONST_INT;
@@ -1072,19 +1073,22 @@ YY_RULE_SETUP
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 78 "1405079.l"
+#line 79 "1405079.l"
 {
-				SymbolInfo *s=new  SymbolInfo(yytext,"CONST_FLOAT");
+				SymbolInfo *s=new  SymbolInfo(yytext,"float");
+				s->Token="CONST_FLOAT";
 				s->fvalue = atof(yytext);
+				cout<<"CONST_FLOAT : "<<yytext<<" "<<s->fvalue<<endl;
 				yylval = (YYSTYPE)s;
 				return CONST_FLOAT;
 			}
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 84 "1405079.l"
+#line 87 "1405079.l"
 {
-				SymbolInfo *s = new  SymbolInfo(yytext,"CHAR_CONST");
+				SymbolInfo *s = new  SymbolInfo(yytext,"char");
+				s->Token="CHAR_CONST";
 				s->c = yytext[1];
 				yylval = (YYSTYPE)s;
 				return CONST_CHAR;
@@ -1092,9 +1096,9 @@ YY_RULE_SETUP
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 90 "1405079.l"
+#line 94 "1405079.l"
 {
-				SymbolInfo *s = new  SymbolInfo(yytext,"CHAR_CONST");
+				SymbolInfo *s = new  SymbolInfo(yytext,"char");
 				for(int i=0;i<10;i++)
 				{
 				    if(yytext[2]==arrchar[i][0]){
@@ -1102,110 +1106,124 @@ YY_RULE_SETUP
 					    break;
 				    }
 				}
+				s->Token="CHAR_CONST";
 				yylval = (YYSTYPE)s;
 				return CONST_CHAR;
 			}
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 103 "1405079.l"
+#line 108 "1405079.l"
 {
-				SymbolInfo *s=new  SymbolInfo(yytext,"ID");
+				SymbolInfo *s=new  SymbolInfo(yytext,"");
+				s->Token="ID";
+				cout<<"Id = "<< s->getName()<<endl;
 				yylval = (YYSTYPE)s;
 				return ID;
 			}
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 109 "1405079.l"
+#line 116 "1405079.l"
 {
-			SymbolInfo *s= new  SymbolInfo(yytext,"ADDOP");
+			SymbolInfo *s= new  SymbolInfo(yytext,"");
+			s->Token="ADDOP";
 			yylval = (YYSTYPE)s;
 			return ADDOP;
 			}
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 114 "1405079.l"
+#line 122 "1405079.l"
 {
-			SymbolInfo *s= new  SymbolInfo(yytext,"MULOP");
+			SymbolInfo *s= new  SymbolInfo(yytext,"");
+			s->Token="MULOP";
 			yylval = (YYSTYPE)s;
 			return MULOP;
 			}
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 119 "1405079.l"
+#line 128 "1405079.l"
 { return INCOP; }
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 121 "1405079.l"
+#line 130 "1405079.l"
 { return DECOP; }
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 123 "1405079.l"
-{ return RELOP; }
+#line 132 "1405079.l"
+{ 
+			SymbolInfo *s= new  SymbolInfo(yytext,"");
+			s->Token="RELOP";
+			yylval = (YYSTYPE)s;
+			return RELOP; }
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 125 "1405079.l"
+#line 138 "1405079.l"
 { return ASSINOP; }
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 127 "1405079.l"
-{ return LOGICOP; }
+#line 140 "1405079.l"
+{ 
+			SymbolInfo *s= new  SymbolInfo(yytext,"");
+			s->Token="LOGICOP";
+			yylval = (YYSTYPE)s;
+			return LOGICOP; 
+		}
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 129 "1405079.l"
+#line 147 "1405079.l"
 { return NOT; }
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 131 "1405079.l"
+#line 149 "1405079.l"
 {return LPAREN;}
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 132 "1405079.l"
+#line 150 "1405079.l"
 {return RPAREN;}
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 133 "1405079.l"
+#line 151 "1405079.l"
 {return LCURL;}
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
-#line 134 "1405079.l"
+#line 152 "1405079.l"
 {return RCURL;}
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
-#line 135 "1405079.l"
+#line 153 "1405079.l"
 {return LTHIRD;}
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
-#line 136 "1405079.l"
+#line 154 "1405079.l"
 {return RTHIRD;}
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
-#line 138 "1405079.l"
+#line 156 "1405079.l"
 { return COMMA; }
 	YY_BREAK
 case 38:
 YY_RULE_SETUP
-#line 139 "1405079.l"
+#line 157 "1405079.l"
 { return SEMICOLON; }
 	YY_BREAK
 case 39:
 YY_RULE_SETUP
-#line 141 "1405079.l"
+#line 159 "1405079.l"
 { 
 			BEGIN SINGLECOM;
 			temp+="//";
@@ -1214,7 +1232,7 @@ YY_RULE_SETUP
 case 40:
 /* rule 40 can match eol */
 YY_RULE_SETUP
-#line 145 "1405079.l"
+#line 163 "1405079.l"
 {
 			line_count++;
 			templine++;			
@@ -1225,7 +1243,7 @@ case 41:
 (yy_c_buf_p) = yy_cp -= 1;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 149 "1405079.l"
+#line 167 "1405079.l"
 {}
 	YY_BREAK
 case 42:
@@ -1233,7 +1251,7 @@ case 42:
 (yy_c_buf_p) = yy_cp -= 1;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 150 "1405079.l"
+#line 168 "1405079.l"
 {
 			temp+=yytext;
 			//fprintf(token,"<STRING>, %s\"> ",temp.c_str());
@@ -1246,14 +1264,14 @@ YY_RULE_SETUP
 	YY_BREAK
 case 43:
 YY_RULE_SETUP
-#line 159 "1405079.l"
+#line 177 "1405079.l"
 {
 			temp+=yytext;
 			}
 	YY_BREAK
 case 44:
 YY_RULE_SETUP
-#line 163 "1405079.l"
+#line 181 "1405079.l"
 { 
 			BEGIN MULTICOM;
 			temp+="/*";
@@ -1262,7 +1280,7 @@ YY_RULE_SETUP
 case 45:
 /* rule 45 can match eol */
 YY_RULE_SETUP
-#line 167 "1405079.l"
+#line 185 "1405079.l"
 {
 			line_count++;
 			templine++;
@@ -1271,7 +1289,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 46:
 YY_RULE_SETUP
-#line 172 "1405079.l"
+#line 190 "1405079.l"
 {
 			fprintf(logout,"Line No. %d: Token <COMMENT> Lexeme %s*/ found\n\n",line_count-templine,temp.c_str());
 			BEGIN INITIAL;
@@ -1281,7 +1299,7 @@ YY_RULE_SETUP
 			}
 	YY_BREAK
 case YY_STATE_EOF(MULTICOM):
-#line 179 "1405079.l"
+#line 197 "1405079.l"
 {
 			temp+=yytext;
 			fprintf(logout,"Error at line %d: Unterminated comment %s\n\n",line_count-templine,temp.c_str());
@@ -1294,14 +1312,14 @@ case YY_STATE_EOF(MULTICOM):
 	YY_BREAK
 case 47:
 YY_RULE_SETUP
-#line 188 "1405079.l"
+#line 206 "1405079.l"
 {
 			temp+=yytext;
 			}
 	YY_BREAK
 case 48:
 YY_RULE_SETUP
-#line 192 "1405079.l"
+#line 210 "1405079.l"
 { 
 //			BEGIN ERR;
 			fprintf(logout,"Error at line %d: Too many decimal point %s\n\n",line_count,yytext);
@@ -1310,7 +1328,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 49:
 YY_RULE_SETUP
-#line 197 "1405079.l"
+#line 215 "1405079.l"
 {
 //BEGIN ERR;
 			fprintf(logout,"Error at line %d: Ill formed number %s\n\n",line_count,yytext);
@@ -1319,7 +1337,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 50:
 YY_RULE_SETUP
-#line 202 "1405079.l"
+#line 220 "1405079.l"
 {
 //BEGIN ERR;
 			fprintf(logout,"Error at line %d: Invalid prefix on ID or invalid suffix on Number %s\n\n",line_count,yytext);
@@ -1328,7 +1346,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 51:
 YY_RULE_SETUP
-#line 207 "1405079.l"
+#line 225 "1405079.l"
 {
 //BEGIN ERR;
 			fprintf(logout,"Error at line %d: Empty character constant error %s \n\n",line_count,yytext);
@@ -1337,7 +1355,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 52:
 YY_RULE_SETUP
-#line 212 "1405079.l"
+#line 230 "1405079.l"
 {
 //BEGIN ERR;
 			fprintf(logout,"Error at line %d: Unterminated character %s\n\n",line_count,yytext);
@@ -1347,7 +1365,7 @@ YY_RULE_SETUP
 case 53:
 /* rule 53 can match eol */
 YY_RULE_SETUP
-#line 217 "1405079.l"
+#line 235 "1405079.l"
 {
 //BEGIN ERR;
 			fprintf(logout,"Error at line %d: Unrecognized character %s\n\n",line_count,yytext);
@@ -1356,7 +1374,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 54:
 YY_RULE_SETUP
-#line 222 "1405079.l"
+#line 240 "1405079.l"
 {
 //BEGIN ERR;
 			fprintf(logout,"Error at line %d: Multi character constant error %s\n\n",line_count,yytext);
@@ -1366,13 +1384,13 @@ YY_RULE_SETUP
 case 55:
 /* rule 55 can match eol */
 YY_RULE_SETUP
-#line 227 "1405079.l"
+#line 245 "1405079.l"
 {
 			line_count++;}
 	YY_BREAK
 case 56:
 YY_RULE_SETUP
-#line 229 "1405079.l"
+#line 247 "1405079.l"
 {
 if(strcmp(yytext,")")==0)		{
 			//fprintf(token,"<RPAREN, %s> ",yytext);
@@ -1395,16 +1413,16 @@ if(strcmp(yytext,";")==0)    	{
 	YY_BREAK
 case 57:
 YY_RULE_SETUP
-#line 248 "1405079.l"
+#line 266 "1405079.l"
 {}
 	YY_BREAK
 case YY_STATE_EOF(INITIAL):
 case YY_STATE_EOF(STRINGSTATE):
 case YY_STATE_EOF(SINGLECOM):
 case YY_STATE_EOF(ERR):
-#line 250 "1405079.l"
+#line 268 "1405079.l"
 {
-			line_count--;
+			//line_count--;
 			//st->PrintAllScopeTable();
 			//fprintf(logout,"Total Lines: %d\n",line_count); 
 			//fprintf(logout,"Total Errors: %d\n",error_count);
@@ -1414,10 +1432,10 @@ case YY_STATE_EOF(ERR):
 	YY_BREAK
 case 58:
 YY_RULE_SETUP
-#line 259 "1405079.l"
+#line 277 "1405079.l"
 ECHO;
 	YY_BREAK
-#line 1421 "lex.yy.c"
+#line 1439 "lex.yy.c"
 
 	case YY_END_OF_BUFFER:
 		{
@@ -2416,7 +2434,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 259 "1405079.l"
+#line 277 "1405079.l"
 
 
 
