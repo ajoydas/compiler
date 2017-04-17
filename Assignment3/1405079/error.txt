@@ -1,6 +1,8 @@
-Line No. 2: Parameters Size Mismatch of Function a
+Line No. 4: Error Number 1 Undeclared variable!  program
 
-Line No. 3: Parameters Mismatch of Function a
+Line No. 5: Error Number 2 Undeclared variable!  program
 
-Line No. 4: Return-type Mismatch of Function a
+Line No. 6: Error Number 3 Undeclared variable!  program
+
+Line No. 7: Error Number 4 Undeclared variable!  program
 

@@ -81,7 +81,8 @@ extern int yydebug;
     COMMA = 291,
     SEMICOLON = 292,
     SINGLECOM = 293,
-    MULTICOM = 294
+    MULTICOM = 294,
+    only_if = 295
   };
 #endif
 /* Tokens.  */
@@ -122,6 +123,7 @@ extern int yydebug;
 #define SEMICOLON 292
 #define SINGLECOM 293
 #define MULTICOM 294
+#define only_if 295
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED

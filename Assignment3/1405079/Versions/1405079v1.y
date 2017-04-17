@@ -404,7 +404,7 @@ expression : logic_expression {
 			fprintf(logout,"Line No. %d: expression : variable ASSINOP logic_expression\n\n",line_count);
 			//Print the symboltable here
 			cout<<$3->ivalue<<endl;
-			cout<<"Variable : "<<$1->name<<" "<<$1->ivalue<<" "<<$1->type<<endl;
+			cout<<"Variable : "<<$1->name<<" "<<$1->ivalue<<endl;
 			if($1->type == "int"){
 				if($3->type == "int"){
 					$1->ivalue = $3->ivalue;
@@ -438,7 +438,6 @@ expression : logic_expression {
 					$1->c = $3->c;
 				}
 			}*/
-			cout<<"After assign: "<<$1->ivalue<<endl;
 			$$ = $1;
 			//table->printTable(fout);
 		}

@@ -18,12 +18,10 @@ public:
 
 class SymbolInfo
 {
-private:
-    string name;
-    string type;
-	
-	
 public:
+	string name;
+    string type;
+	string Token;
     SymbolInfo* next;
 	int ivalue;
 	float fvalue;
@@ -132,7 +130,15 @@ public:
         if(arr[pos]->next==NULL)
         {
             //cout<<"Inserted in ScopeTable# "<<id<<" at position "<<pos<<"," <<0<<endl;
-            arr[pos]->next=new SymbolInfo(symbol.getName(),symbol.getType());
+			SymbolInfo *temp=new SymbolInfo(symbol.getName(),symbol.getType());
+			temp->ivalue=symbol.ivalue;
+			temp->fvalue=symbol.fvalue;
+			temp->Token=symbol.Token;
+			temp->arraysize=symbol.arraysize;
+			temp->array=symbol.array;
+			temp->fp=symbol.fp;
+			temp->c=symbol.c;
+            arr[pos]->next=temp;
 	    //Print();
             return true;
         }
@@ -150,7 +156,15 @@ public:
                 count++;
             }
             //cout<<"Inserted in ScopeTable# "<<id<<" at position "<<pos<<"," <<count+1<<endl;
-            currSymbol->next=new SymbolInfo(symbol.getName(),symbol.getType());
+			SymbolInfo *temp=new SymbolInfo(symbol.getName(),symbol.getType());
+			temp->ivalue=symbol.ivalue;
+			temp->fvalue=symbol.fvalue;
+			temp->Token=symbol.Token;
+			temp->arraysize=symbol.arraysize;
+			temp->array=symbol.array;
+			temp->fp=symbol.fp;
+			temp->c=symbol.c;
+            currSymbol->next=temp;
 	    //Print();
             return true;
         }
@@ -211,10 +225,24 @@ public:
 	    if(currSymbol == NULL)continue;
 	    fprintf(logout,"%d --> ",i);
             while (currSymbol != NULL) {
-                fprintf(logout," < %s, %s> ",currSymbol->getName().c_str(),currSymbol->getType().c_str());
-                currSymbol = currSymbol->next;
+                fprintf(logout," < %s, %s ",currSymbol->getName().c_str(),currSymbol->getType().c_str());
+cout<<"Arraysize: "<<currSymbol->arraysize<<endl;
+				if(currSymbol->arraysize!=-1)
+				{
+fprintf(logout,",{ ");
+for(int i=0;i<currSymbol->arraysize;i++)
+{
+fprintf(logout,"%f,",currSymbol->array[i]->fvalue);
+}
+fprintf(logout," }>\n");
+				}
+else if(currSymbol->fp!=NULL)fprintf(logout,">\n");
+else if(currSymbol->type=="int")fprintf(logout,", %d >\n",currSymbol->ivalue);
+else if(currSymbol->type=="float")fprintf(logout,", %f >\n",currSymbol->fvalue);
+else if(currSymbol->type=="char")fprintf(logout,", %c >\n",currSymbol->c);
+currSymbol = currSymbol->next;
             }
-            fprintf(logout,"\n");
+            //fprintf(logout,"\n");
         }
 	fprintf(logout,"\n");
     }
@@ -304,6 +332,12 @@ public:
     {
 	SymbolInfo symbol(name,type);
         return currScope->Insert(symbol);
+    }
+
+	bool Insert(SymbolInfo *symbol)
+    {
+		//SymbolInfo symbol= *s;
+        return currScope->Insert(*symbol);
     }
 
     bool Remove(string name)

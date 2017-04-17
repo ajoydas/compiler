@@ -1,100 +1,165 @@
-Line No. 1: type_specifier : VOID
-
 Line No. 1: type_specifier : INT 
 
-Line No. 1: parameter_list  : type_specifier ID
-b
-
-Line No. 1: type_specifier : FLOAT
-
-Line No. 1: parameter_list  : parameter_list COMMA type_specifier ID
-c
-
-Line No. 1: func_declaration : type_specifier ID LPAREN parameter_list RPAREN SEMICOLON
-a
-
-Line No. 1: unit : func_declaration
-
-Line No. 1: program : unit
-
-Line No. 2: type_specifier : VOID
-
-Line No. 2: type_specifier : INT 
-
-Line No. 2: parameter_list  : type_specifier ID
-b
-
-Line No. 2: compound_statement : LCURL RCURL
-
-ScopeTable # 2
-0 -->  < b, int> 
-6 -->  < c, float> 
-
-ScopeTable # 1
-5 -->  < a, function> 
-
-Line No. 2: func_definition : type_specifier ID LPAREN parameter_list RPAREN compound_statement
-a
-
-Line No. 2: unit : func_definition
-
-Line No. 2: program : program unit
-
-Line No. 3: type_specifier : VOID
+Line No. 1: parameter_list  : empty
 
 Line No. 3: type_specifier : INT 
 
-Line No. 3: parameter_list  : type_specifier ID
-b
+Line No. 3: program : unit
 
-Line No. 3: type_specifier : INT 
 
-Line No. 3: parameter_list  : parameter_list COMMA type_specifier ID
-c
 
-Line No. 3: compound_statement : LCURL RCURL
+Line No. 3: var_declaration	: type_specifier declaration_list SEMICOLON
+
+Line No. 3: statement  : var_declaration
+
+Line No. 3: statements : statement
+
+Line No. 4: variable : ID
+
+Line No. 4: factor : CONST_INT
+
+1
+
+Line No. 4: unary_expression : factor
+
+Line No. 4: term : unary_expression
+
+Line No. 4: simple_expression : term
+
+Line No. 4: rel_expression : simple_expression
+
+Line No. 4: logic_expression : rel_expression
+
+Line No. 4: expression : variable ASSINOP logic_expression
+
+Line No. 4: expression_statement	: expression SEMICOLON
+
+Line No. 4: statement : expression_statement
+
+Line No. 4: statements : statements statement
+
+Line No. 5: variable : ID
+
+Line No. 5: factor : CONST_INT
+
+2
+
+Line No. 5: unary_expression : factor
+
+Line No. 5: term : unary_expression
+
+Line No. 5: simple_expression : term
+
+Line No. 5: rel_expression : simple_expression
+
+Line No. 5: logic_expression : rel_expression
+
+Line No. 5: expression : variable ASSINOP logic_expression
+
+Line No. 5: expression_statement	: expression SEMICOLON
+
+Line No. 5: statement : expression_statement
+
+Line No. 5: statements : statements statement
+
+Line No. 6: factor : CONST_INT
+
+0
+
+Line No. 6: unary_expression : factor
+
+Line No. 6: term : unary_expression
+
+Line No. 6: simple_expression : term
+
+Line No. 6: rel_expression : simple_expression
+
+Line No. 6: logic_expression : rel_expression
+
+Line No. 6: expression : logic_expression
+
+Line No. 6: variable : ID LTHIRD expression RTHIRD
+
+Array index insert: 0
+
+Line No. 6: variable : ID
+
+Line No. 6: factor : variable
+
+Line No. 6: unary_expression : factor
+
+Line No. 6: term : unary_expression
+
+Line No. 6: simple_expression : term
+
+Line No. 6: rel_expression : simple_expression
+
+Line No. 6: logic_expression : rel_expression
+
+Line No. 6: expression : variable ASSINOP logic_expression
+
+Line No. 6: expression_statement	: expression SEMICOLON
+
+Line No. 6: statement : expression_statement
+
+Line No. 6: statements : statements statement
+
+Line No. 7: factor : CONST_INT
+
+1
+
+Line No. 7: unary_expression : factor
+
+Line No. 7: term : unary_expression
+
+Line No. 7: simple_expression : term
+
+Line No. 7: rel_expression : simple_expression
+
+Line No. 7: logic_expression : rel_expression
+
+Line No. 7: expression : logic_expression
+
+Line No. 7: variable : ID LTHIRD expression RTHIRD
+
+Array index insert: 0
+
+Line No. 7: variable : ID
+
+Line No. 7: factor : variable
+
+Line No. 7: unary_expression : factor
+
+Line No. 7: term : unary_expression
+
+Line No. 7: simple_expression : term
+
+Line No. 7: rel_expression : simple_expression
+
+Line No. 7: logic_expression : rel_expression
+
+Line No. 7: expression : variable ASSINOP logic_expression
+
+Line No. 7: expression_statement	: expression SEMICOLON
+
+Line No. 7: statement : expression_statement
+
+Line No. 7: statements : statements statement
+
+Line No. 8: compound_statement : LCURL RCURL
 
 ScopeTable # 2
-0 -->  < b, int> 
-6 -->  < c, float> 
+5 -->  < a, int ,{ 0.000000,0.000000, }>
 
 ScopeTable # 1
-5 -->  < a, function> 
+1 -->  < main, function >
 
-Line No. 3: func_definition : type_specifier ID LPAREN parameter_list RPAREN compound_statement
-a
+Line No. 8: func_definition : type_specifier ID LPAREN parameter_list RPAREN compound_statement
+main
 
-Line No. 3: unit : func_definition
+Line No. 8: unit : func_definition
 
-Line No. 3: program : program unit
+Line No. 8: program : unit
 
-Line No. 4: type_specifier : INT 
-
-Line No. 4: type_specifier : INT 
-
-Line No. 4: parameter_list  : type_specifier ID
-b
-
-Line No. 4: type_specifier : FLOAT
-
-Line No. 4: parameter_list  : parameter_list COMMA type_specifier ID
-c
-
-Line No. 4: compound_statement : LCURL RCURL
-
-ScopeTable # 2
-0 -->  < b, int> 
-6 -->  < c, float> 
-
-ScopeTable # 1
-5 -->  < a, function> 
-
-Line No. 4: func_definition : type_specifier ID LPAREN parameter_list RPAREN compound_statement
-a
-
-Line No. 4: unit : func_definition
-
-Line No. 4: program : program unit
-
-Line No. 3: start : program
+Line No. 7: start : program
 
