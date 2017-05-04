@@ -79,7 +79,13 @@ int main()
 //cout<<params[0].getName();
 //params.clear();
 //cout<<params.size();
-a(5);
+//a(5);
+
+int b;
+int c=2;
+b= c* 5 % (1 < 3 && 9);
+printf("%d",b);
+
 }
 
 

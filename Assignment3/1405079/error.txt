@@ -1,0 +1,16 @@
+Line 2: Error Number 1 Undeclared Function bar call! 
+
+Line 14: Error Number 2 Undeclared variable!  
+
+Line 14: Error Number 3 Type Mismatch 
+
+Line 16: Error Number 4 Warning! Cannot take mod of float or with a float 
+
+Line 17: Error Number 5 Type Mismatch 
+
+Line 18: Parameters Size Mismatch of Function Call bar
+
+Line 19: Parameters Mismatch of Function Call bar
+
+Line 20: Error Number 6 a is not a Function! 
+

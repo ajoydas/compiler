@@ -1,0 +1,29 @@
+Line No 3
+
+ScopeTable # 2
+
+ScopeTable # 1
+6 -->  < foo, function >
+
+Line No 7
+
+ScopeTable # 2
+0 -->  < b, int , -10000000 >
+5 -->  < a, int , -10000000 >
+
+ScopeTable # 1
+1 -->  < bar, function >
+6 -->  < foo, function >
+
+Line No 22
+
+ScopeTable # 2
+6 -->  < c, int ,{ -10000000,-10000000,-10000000, }>
+
+ScopeTable # 1
+1 -->  < bar, function >
+ < main, function >
+5 -->  < f, function >
+ < a, int , -10000000 >
+6 -->  < foo, function >
+

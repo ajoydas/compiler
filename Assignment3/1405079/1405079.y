@@ -12,7 +12,7 @@ extern FILE *yyin;
 FILE *logout;
 FILE *error;
 FILE *symtable;
-
+bool symtabprint=false;
 SymbolTable* table = new SymbolTable(7,1);
 
 int errorcount = 0;
@@ -31,6 +31,10 @@ fprintf(error,"Line %d: Error Number %d %s \n\n",line_count,errorcount,s.c_str()
 %}
 
 %token IF FOR DO INT FLOAT VOID SWITCH DEFAULT ELSE  WHILE BREAK RETURN CASE CONTINUE PRINTLN CONST_INT CONST_FLOAT CONST_CHAR ID ADDOP MULOP INCOP DECOP RELOP ASSINOP LOGICOP NOT LPAREN RPAREN LCURL RCURL LTHIRD RTHIRD COMMA SEMICOLON SINGLECOM MULTICOM 
+
+
+%left ADDOP
+%left MULOP
 
 %nonassoc only_if
 %nonassoc ELSE
@@ -196,7 +200,10 @@ compound_statement :LCURL
 	} 
 statements RCURL { 
 		 fprintf(logout,"Line %d: compound_statement : LCURL statements RCURL\n\n",line_count);
+		 symtabprint=true;
+		 fprintf(symtable,"Line No %d\n\n",line_count);
 		 table->PrintAllScopeTable();
+		 symtabprint=false;
 		 table->ExitScope();
 	}
 	| LCURL 

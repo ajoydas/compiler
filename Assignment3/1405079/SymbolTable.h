@@ -7,7 +7,7 @@ using namespace std;
 
 extern FILE *logout;
 extern FILE *symtable;
-
+extern bool symtabprint;
 class SymbolInfo;
 class Function
 {
@@ -220,37 +220,57 @@ public:
     void Print()
     {
         fprintf(logout,"ScopeTable # %d\n",id);
+        if(symtabprint)fprintf(symtable,"ScopeTable # %d\n",id);
         for (int i = 0; i < n; ++i) {
             SymbolInfo *currSymbol=arr[i]->next;
-	    if(currSymbol == NULL)continue;
-	    fprintf(logout,"%d --> ",i);
+    	    if(currSymbol == NULL)continue;
+    	    fprintf(logout,"%d --> ",i);
+            if(symtabprint) fprintf(symtable,"%d --> ",i);
             while (currSymbol != NULL) {
                 fprintf(logout," < %s, %s ",currSymbol->getName().c_str(),currSymbol->getType().c_str());
-cout<<"Arraysize: "<<currSymbol->arraysize<<endl;
-				if(currSymbol->arraysize!=-1)
-				{
-fprintf(logout,",{ ");
-for(int i=0;i<currSymbol->arraysize;i++)
-{
-if(currSymbol->type=="int"){
-fprintf(logout,"%d,",currSymbol->array[i]->ivalue);
-}
-else if(currSymbol->type=="float")
-{
-fprintf(logout,"%f,",currSymbol->array[i]->fvalue);
-}
-}
-fprintf(logout," }>\n");
-				}
-else if(currSymbol->fp!=NULL)fprintf(logout,">\n");
-else if(currSymbol->type=="int")fprintf(logout,", %d >\n",currSymbol->ivalue);
-else if(currSymbol->type=="float")fprintf(logout,", %f >\n",currSymbol->fvalue);
-else if(currSymbol->type=="char")fprintf(logout,", %c >\n",currSymbol->c);
-currSymbol = currSymbol->next;
+                if(symtabprint)fprintf(symtable," < %s, %s ",currSymbol->getName().c_str(),currSymbol->getType().c_str());
+                cout<<"Arraysize: "<<currSymbol->arraysize<<endl;
+        		if(currSymbol->arraysize!=-1)
+        		{
+                    fprintf(logout,",{ ");
+                    if(symtabprint)fprintf(symtable,",{ ");
+                    for(int i=0;i<currSymbol->arraysize;i++)
+                    {
+                        if(currSymbol->type=="int"){
+                            fprintf(logout,"%d,",currSymbol->array[i]->ivalue);
+                            if(symtabprint)fprintf(symtable,"%d,",currSymbol->array[i]->ivalue);
+                        }
+                        else if(currSymbol->type=="float")
+                        {   
+                            fprintf(logout,"%f,",currSymbol->array[i]->fvalue);
+                            if(symtabprint)fprintf(symtable,"%f,",currSymbol->array[i]->fvalue);
+                        }
+                    }
+                    fprintf(logout," }>\n");
+                    if(symtabprint)fprintf(symtable," }>\n");
+    			}
+                else if(currSymbol->fp!=NULL){
+                    fprintf(logout,">\n");
+                    if(symtabprint)fprintf(symtable,">\n");
+                }
+                else if(currSymbol->type=="int"){
+                    fprintf(logout,", %d >\n",currSymbol->ivalue);
+                    if(symtabprint)fprintf(symtable,", %d >\n",currSymbol->ivalue);
+                }
+                else if(currSymbol->type=="float"){
+                    fprintf(logout,", %f >\n",currSymbol->fvalue);
+                    if(symtabprint)fprintf(symtable,", %f >\n",currSymbol->fvalue);
+                }
+                else if(currSymbol->type=="char"){
+                    fprintf(logout,", %c >\n",currSymbol->c);
+                    if(symtabprint)fprintf(symtable,", %c >\n",currSymbol->c);
+                }
+                currSymbol = currSymbol->next;
             }
             //fprintf(logout,"\n");
         }
 	fprintf(logout,"\n");
+    if(symtabprint)fprintf(symtable,"\n");
     }
     void DistType()
     {
