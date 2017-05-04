@@ -84,26 +84,6 @@ UNTERMINATED_CHAR '[A-Za-z0-9]*|'
 				yylval = (YYSTYPE)s;
 				return CONST_FLOAT;
 			}
-{CHARACTER}	{
-				SymbolInfo *s = new  SymbolInfo(yytext,"char");
-				s->Token="CHAR_CONST";
-				s->c = yytext[1];
-				yylval = (YYSTYPE)s;
-				return CONST_CHAR;
-			}
-{CHARACTER_EX}	{
-				SymbolInfo *s = new  SymbolInfo(yytext,"char");
-				for(int i=0;i<10;i++)
-				{
-				    if(yytext[2]==arrchar[i][0]){
-					    s->c = arrchar[i][1];
-					    break;
-				    }
-				}
-				s->Token="CHAR_CONST";
-				yylval = (YYSTYPE)s;
-				return CONST_CHAR;
-			}
 
 {IDENTIFIER}	{
 				SymbolInfo *s=new  SymbolInfo(yytext,"");

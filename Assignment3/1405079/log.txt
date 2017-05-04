@@ -133,15 +133,6 @@ Line 14: logic_expression : rel_expression
 
 Line 14: expression : variable ASSINOP logic_expression
 
-ScopeTable # 2
-
-ScopeTable # 1
-1 -->  < bar, function >
- < main, function >
-5 -->  < f, function >
- < a, int , -10000000 >
-6 -->  < foo, function >
-
 Line 14: expression_statement	: expression SEMICOLON
 
 Line 14: statement : expression_statement
@@ -239,7 +230,11 @@ Line 18: logic_expression : rel_expression
 
 Line 18: argument_list : logic_expression
 
+Line 18: argument_list : argumets
+
 Line 18: factor : ID LPAREN argument_list RPAREN
+
+Error at Line 18: Total Number of Arguments mismatch in funtion bar
 
 Line 18: unary_expression : factor
 
@@ -289,7 +284,11 @@ Line 19: logic_expression : rel_expression
 
 Line 19: argument_list : argument_list COMMA logic_expression
 
+Line 19: argument_list : argumets
+
 Line 19: factor : ID LPAREN argument_list RPAREN
+
+Error at Line 19: 1th argument mismatch in function bar
 
 Line 19: unary_expression : factor
 
@@ -323,6 +322,8 @@ Line 20: rel_expression : simple_expression
 Line 20: logic_expression : rel_expression
 
 Line 20: argument_list : logic_expression
+
+Line 20: argument_list : argumets
 
 Line 20: factor : ID LPAREN argument_list RPAREN
 
@@ -382,7 +383,7 @@ Line 22: unit : func_definition
 
 Line 22: program : program unit
 
-Total Lines: 22
+Total Lines: 23
 
-Total Errors: 6
+Total Errors: 7
 

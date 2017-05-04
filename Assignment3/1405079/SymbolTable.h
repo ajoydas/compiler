@@ -25,7 +25,6 @@ public:
     SymbolInfo* next;
 	int ivalue;
 	float fvalue;
-	char c;
 	Function *fp;
 	SymbolInfo** array;
 	int arraysize = -1;
@@ -36,7 +35,6 @@ public:
         this->type = "";
 		ivalue=-1e+007;
 		fvalue=-1e+007;
-		c=0;
         this->next = NULL;
 		this->fp=NULL;
 		this-> array=NULL;
@@ -49,7 +47,6 @@ public:
         this->next = next;
 		ivalue=-1e+007;
 		fvalue=-1e+007;
-		c=0;
         this->next = NULL;
 		this->fp=NULL;
 		this-> array=NULL;
@@ -77,7 +74,6 @@ cout<<"<--------Symbol Info:------>\n"<<"Name : "<<name<<endl;
 cout<<"Type : "<<type<<endl;
 cout<<"Ivalue : "<<ivalue<<endl;
 cout<<"Fvalue : "<<fvalue<<endl;
-cout<<"Char : "<<c<<endl;
 cout<<"ArraySize : "<<arraysize<<endl;
 if(fp!=NULL)
 {
@@ -137,7 +133,6 @@ public:
 			temp->arraysize=symbol.arraysize;
 			temp->array=symbol.array;
 			temp->fp=symbol.fp;
-			temp->c=symbol.c;
             arr[pos]->next=temp;
 	    //Print();
             return true;
@@ -163,7 +158,6 @@ public:
 			temp->arraysize=symbol.arraysize;
 			temp->array=symbol.array;
 			temp->fp=symbol.fp;
-			temp->c=symbol.c;
             currSymbol->next=temp;
 	    //Print();
             return true;
@@ -261,10 +255,7 @@ public:
                     fprintf(logout,", %f >\n",currSymbol->fvalue);
                     if(symtabprint)fprintf(symtable,", %f >\n",currSymbol->fvalue);
                 }
-                else if(currSymbol->type=="char"){
-                    fprintf(logout,", %c >\n",currSymbol->c);
-                    if(symtabprint)fprintf(symtable,", %c >\n",currSymbol->c);
-                }
+             
                 currSymbol = currSymbol->next;
             }
             //fprintf(logout,"\n");

@@ -1,16 +1,14 @@
-Line 2: Error Number 1 Undeclared Function bar call! 
+Error at Line 2: Undeclared Function bar 
 
-Line 14: Error Number 2 Undeclared variable!  
+Error at Line 14: Undeclared variable d 
 
-Line 14: Error Number 3 Type Mismatch 
+Error at Line 16: Non-Integer operand on modulus operator 
 
-Line 16: Error Number 4 Warning! Cannot take mod of float or with a float 
+Error at Line 17: Type Mismatch 
 
-Line 17: Error Number 5 Type Mismatch 
+Error at Line 18: Total Number of Arguments mismatch in funtion bar 
 
-Line 18: Parameters Size Mismatch of Function Call bar
+Error at Line 19: 1th argument mismatch in function bar 
 
-Line 19: Parameters Mismatch of Function Call bar
-
-Line 20: Error Number 6 a is not a Function! 
+Error at Line 20: a is not a Function 
 

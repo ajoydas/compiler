@@ -25,12 +25,12 @@ vector<SymbolInfo> params,args;
 
 void yyerror(string s){
 	errorcount++;
-fprintf(error,"Line %d: Error Number %d %s \n\n",line_count,errorcount,s.c_str());
+fprintf(error,"Error at Line %d: %s \n\n",line_count,s.c_str());
 }
 
 %}
 
-%token IF FOR DO INT FLOAT VOID SWITCH DEFAULT ELSE  WHILE BREAK RETURN CASE CONTINUE PRINTLN CONST_INT CONST_FLOAT CONST_CHAR ID ADDOP MULOP INCOP DECOP RELOP ASSINOP LOGICOP NOT LPAREN RPAREN LCURL RCURL LTHIRD RTHIRD COMMA SEMICOLON SINGLECOM MULTICOM 
+%token IF FOR DO INT FLOAT VOID SWITCH DEFAULT ELSE  WHILE BREAK RETURN CASE CONTINUE PRINTLN CONST_INT CONST_FLOAT ID ADDOP MULOP INCOP DECOP RELOP ASSINOP LOGICOP NOT LPAREN RPAREN LCURL RCURL LTHIRD RTHIRD COMMA SEMICOLON SINGLECOM MULTICOM 
 
 
 %left ADDOP
@@ -96,7 +96,8 @@ fprintf(logout,"%s\n\n",$2->getName().c_str());
 		} 
 		else
 		{
-			fprintf(error,"Line %d: Multiple declaration Function %s\n\n",line_count,$2->getName().c_str());
+			fprintf(logout,"Error at Line %d: Multiple declaration Function %s\n\n",line_count,$2->getName().c_str());
+			yyerror("Multiple declaration Function "+$2->getName());
 		}
 		fn=NULL;
 		params.clear();
@@ -125,20 +126,26 @@ func_definition : type_specifier ID LPAREN parameter_list RPAREN
 			//fprintf(error,"Line %d: Multiple declaration Function %s\n\n",line_count,$2->getName().c_str());
 			if(si->fp->retype==$1->getName())
 			{
-				if(si->fp->params.size()!=params.size())
-				{fprintf(error,"Line %d: Parameters Size Mismatch of Function %s\n\n",line_count,$2->getName().c_str());	}
+				if(si->fp->params.size()!=params.size()){
+fprintf(logout,"Error at Line %d: Parameters Size Mismatch of Function %s\n\n",line_count,$2->getName().c_str());	
+yyerror("Parameters Size Mismatch of Function "+$2->getName());
+}
 				else{
 					for(int i=0;i<si->fp->params.size();i++)
 					{
 						if(si->fp->params[i].getName()!=params[i].getName()||si->fp->params[i].getType()!=params[i].getType())
 						{
-							fprintf(error,"Line %d: Parameters Mismatch of Function %s\n\n",line_count,$2->getName().c_str());					
+							fprintf(logout,"Error at Line %d: %dth parameter Mismatch of Function %s\n\n",line_count,i+1,$2->getName().c_str());
+ostringstream oss;
+oss<<i+1<<"th parameter Mismatch of Function "<<$2->getName();
+yyerror(oss.str());					
 						}
 					}
 				}
 			}
 			else{
-				fprintf(error,"Line %d: Return-type Mismatch of Function %s\n\n",line_count,$2->getName().c_str());
+				fprintf(logout,"Line %d: Return-type Mismatch of Function %s\n\n",line_count,$2->getName().c_str());
+yyerror("Return-type Mismatch of Function "+$2->getName());
 			}
 		}
 
@@ -237,12 +244,16 @@ type_specifier	: INT  { fprintf(logout,"Line %d: type_specifier : INT \n\n",line
 declaration_list : declaration_list COMMA ID  { 
 				fprintf(logout,"Line %d: declaration_list : declaration_list COMMA ID\n",line_count);
 				fprintf(logout,"%s\n\n",$3->getName().c_str());
+SymbolInfo* temp = new SymbolInfo();
+
+if($1->Token!="error"){
 				if(type == "int"){
 					
 					SymbolInfo* s = new SymbolInfo($3->getName(), "int");
 					s-> Token = "ID";
 					if(table->Insert(s) == 0){
 						yyerror("Multple declaration! ");
+temp->Token="error";
 					}
 				}
 				if(type == "float"){
@@ -250,17 +261,25 @@ declaration_list : declaration_list COMMA ID  {
 					s-> Token = "ID";
 					if(table->Insert(s) == 0){
 						yyerror("Multple declaration! ");
+temp->Token="error";
 					}
 				}
 				if(type == "void"){
 					yyerror("A variable cannot be declared as void!");
+temp->Token="error";
 				}
+}
+else {temp->Token="error";}
 				
-				
+$$=temp;				
 			}
 		 | declaration_list COMMA ID LTHIRD CONST_INT RTHIRD { 
 				fprintf(logout,"Line %d: declaration_list : declaration_list COMMA ID LTHIRD CONST_INT RTHIRD\n",line_count);
 				fprintf(logout,"%s\n%d\n\n",$3->getName().c_str(),$5->ivalue);
+SymbolInfo* temp = new SymbolInfo();
+
+if($1->Token!="error"){
+
 				if(type == "int"){
 					SymbolInfo* s = new SymbolInfo($3->getName(), "int");
 					s-> Token = "ID";
@@ -274,6 +293,7 @@ s->array[i]=new SymbolInfo("","int");
 }
 					if(table->Insert(s) == 0){
 						yyerror("Multple declaration! ");
+temp->Token="error";
 					}
 					
 				}
@@ -288,20 +308,29 @@ s->array[i]=new SymbolInfo("","float");
 }
 					if(table->Insert(s) == 0){
 						yyerror("Multple declaration! ");
+temp->Token="error";
 					}
 				}
 				if(type == "void"){
 					yyerror("A variable cannot be declared as void!");
+temp->Token="error";
 				}
+}
+else {temp->Token="error";}
+
+$$=temp;
 			}
 		 | ID  {
 				fprintf(logout,"Line %d: declaration_list : ID\n",line_count);
 				fprintf(logout,"%s\n\n",$1->getName().c_str());
+SymbolInfo* temp = new SymbolInfo();
+
 				if(type == "int"){
 					SymbolInfo* s = new SymbolInfo($1->getName(), "int");
 					s-> Token = "ID";
 					if(table->Insert(s) == 0){
 						yyerror("Multple declaration! ");
+temp->Token="error";
 					}
 				}
 				if(type == "float"){
@@ -309,16 +338,21 @@ s->array[i]=new SymbolInfo("","float");
 					s-> Token = "ID";
 					if(table->Insert(s) == 0){
 						yyerror("Multple declaration! ");
+temp->Token="error";
 					}
 				}
 				if(type == "void"){
 					yyerror("A variable cannot be declared as void!");
+temp->Token="error";
 				}
+
+$$=temp;
 			}
 		 | ID LTHIRD CONST_INT RTHIRD  { 
 				fprintf(logout,"Line %d: declaration_list : ID LTHIRD CONST_INT RTHIRD\n",line_count);
 				fprintf(logout,"%s\n%d\n\n",$1->getName().c_str(),$3->ivalue);
-				
+SymbolInfo* temp = new SymbolInfo();
+
 				if(type == "int"){
 					SymbolInfo* s = new SymbolInfo($1->getName(), "int");
 					s-> Token = "ID";
@@ -332,6 +366,7 @@ s->array[i]=new SymbolInfo("element","int");
 }
 					if(table->Insert(s) == 0){
 						yyerror("Multple declaration! ");
+temp->Token="error";
 					}
 				}
 				if(type == "float"){
@@ -345,11 +380,15 @@ s->array[i]=new SymbolInfo("","float");
 }
 					if(table->Insert(s) == 0){
 						yyerror("Multple declaration! ");
+temp->Token="error";
 					}
 				}
 				if(type == "void"){
 					yyerror("A variable cannot be declared as void!");
+temp->Token="error";
 				}
+
+$$=temp;
 			}
 		 ;
 
@@ -380,31 +419,47 @@ variable : ID	{
 			fprintf(logout,"%s\n\n",$1->getName().c_str());
 			SymbolInfo* temp = table->Lookup($1->getName());
 			if (temp == NULL){
-				yyerror("Undeclared variable! ");
+				yyerror("Undeclared variable "+$1->getName());
+temp=new SymbolInfo();
+temp->Token="error";
 			}
-			else $$ = temp;
+			$$ = temp;
 		}
 		| ID LTHIRD expression RTHIRD  {
 			fprintf(logout,"Line %d: variable : ID LTHIRD expression RTHIRD\n",line_count);
 			fprintf(logout,"%s\n\n",$1->getName().c_str());
+SymbolInfo* temp = new SymbolInfo();
+
+if($3->Token!="error"){
 			cout<<$1->getName()<<endl;
 			SymbolInfo* temp = table->Lookup($1->getName());
 			if (temp == NULL){
 				yyerror("Undeclared variable! ");
+temp->Token="error";
 			}
-			else{
+			else if($3->type!="int"){
+yyerror("Array index must be integer!");
+temp->Token="error";
+}
+else{
 				cout<<"Array index: "<<$3->ivalue<<endl;
 cout<<"Temp Array Size = "<<temp->arraysize<<endl;
 				if($3->ivalue >= temp->arraysize){
 					yyerror("Array size overbound\n");
+temp->Token="error";
 				}
 				else {
-					$$ = temp->array[$3->ivalue];
+					temp = temp->array[$3->ivalue];
 					//fprintf(logout,"Array index insert: %d\n\n",$$->ivalue);
 				}
 				
 			}
 		}
+else {temp->Token="error";}
+$$=temp;
+
+}
+
 	 ;
 			
 expression : logic_expression {
@@ -413,6 +468,9 @@ expression : logic_expression {
 		}
 	    | variable ASSINOP logic_expression 	 { 
 			fprintf(logout,"Line %d: expression : variable ASSINOP logic_expression\n\n",line_count);
+SymbolInfo* temp = new SymbolInfo();
+
+if($1->Token!="error" && $3->Token!="error"){
 			//Print the symboltable here
 			cout<<"Variable : "<<$1->name<<" "<<$1->ivalue<<" "<<$1->type<<endl;
 			cout<<"Variable : "<<$3->name<<" "<<$3->ivalue<<" "<<$3->type<<endl;
@@ -420,11 +478,9 @@ expression : logic_expression {
 				if($3->type == "int"){
 					$1->ivalue = $3->ivalue;
 				}
-				else if($3->type == "char"){
-					$1->ivalue = $3->c;
-				}
 				else {
 					yyerror("Type Mismatch");
+temp->Token="error";
 				}
 			}
 			else if($1->type == "float"){
@@ -434,15 +490,14 @@ expression : logic_expression {
 				else if($3->type == "float"){
 					$1->fvalue = $3->fvalue;
 				}
-				else if($3->type == "char"){
-					$1->fvalue = $3->c;
-				}
 				else {
 					yyerror("Type Mismatch");
+temp->Token="error";
 				}
 			}
 			else {
 					yyerror("Type Mismatch");
+temp->Token="error";
 				}
 			/*else if($1->type == "char"){
 				if($3->type == "int"){
@@ -456,9 +511,14 @@ expression : logic_expression {
 				}
 			}*/
 			cout<<"After assign: "<<$1->ivalue<<endl;
-			$$ = $1;
+			//$$ = $1;
 			table->PrintAllScopeTable();
 		}
+else {temp->Token="error";}
+
+$$=temp;
+}
+
 	   ;
 			
 logic_expression : rel_expression 	 { 
@@ -468,6 +528,8 @@ logic_expression : rel_expression 	 {
 		| rel_expression LOGICOP rel_expression 	 { 
 			fprintf(logout,"Line %d: logic_expression : rel_expression\n\n",line_count);
 			SymbolInfo* s = new SymbolInfo();
+if($1->Token!="error" && $3->Token!="error"){
+
 			s->type = "int";
 			
 			float f1, f2;
@@ -477,18 +539,12 @@ logic_expression : rel_expression 	 {
 			else if($1->type == "float"){
 				f1 = $1->fvalue;
 			}
-			else if($1->type == "char"){
-				f1 = $1->c;
-			}
 			
 			if($3->type == "int"){
 				f2 = $3->ivalue;
 			}
 			else if($3->type == "float"){
 				f2 = $3->fvalue;
-			}
-			else if($3->type == "char"){
-				f2 = $3->c;
 			}
 			
 			if($2->name == "&&"){
@@ -497,7 +553,11 @@ logic_expression : rel_expression 	 {
 			else if ($2->name == "||"){
 				s->ivalue = f1||f2;
 			}
-			$$ = s;
+			//$$ = s;
+}
+else {s->Token="error";}
+
+$$=s;
 		}
 		;
 			
@@ -508,6 +568,8 @@ rel_expression	: simple_expression  {
 		| simple_expression RELOP simple_expression	 { 
 			fprintf(logout,"Line %d: rel_expression : simple_expression RELOP simple_expression\n\n",line_count);
 			SymbolInfo* s = new SymbolInfo();
+if($1->Token!="error" && $3->Token!="error"){
+
 			s->type = "int";
 			if($2->name == "=="){
 				if($1 == $2){
@@ -557,9 +619,18 @@ rel_expression	: simple_expression  {
 					s->ivalue = 0;
 				}
 			}
-			else yyerror("Relational operator error");
-			$$ = s;
+			else {
+yyerror("Relational operator error");
+s->Token="error";
+}
+			//$$ = s;
 		}
+else {s->Token="error";}
+
+$$=s;
+}
+
+
 		;
 				
 simple_expression : term  { 
@@ -569,6 +640,8 @@ simple_expression : term  {
 		| simple_expression ADDOP term  { 
 			fprintf(logout,"Line %d: simple_expression : simple_expression ADDOP term\n\n",line_count);
 			SymbolInfo* s = new SymbolInfo();
+
+if($1->Token!="error" && $3->Token!="error"){
 			if($2->name == "+"){
 				if($1->type == "int" && $3->type == "int"){
 					s->ivalue = $1->ivalue + $3->ivalue;
@@ -590,33 +663,9 @@ simple_expression : term  {
 					s->type = "float";
 					$$ = s;
 				}
-				else if($1->type == "char" && $3->type == "char"){
-					s->ivalue = $1->c + $3->c;
-					s->type = "int";
-					$$ = s;
-				}
-				else if($1->type == "char" && $3->type == "int"){
-					s->ivalue = $1->c + $3->ivalue;
-					s->type = "int";
-					$$ = s;
-				}
-				else if($1->type == "int" && $3->type == "char"){
-					s->ivalue = $1->ivalue + $3->c;
-					s->type = "int";
-					$$ = s;
-				}
-				else if($1->type == "char" && $3->type == "float"){
-					s->fvalue = $1->c + $3->fvalue;
-					s->type = "float";
-					$$ = s;
-				}
-				else if($1->type == "float" && $3->type == "char"){
-					s->fvalue = $1->fvalue + $3->c;
-					s->type = "float";
-					$$ = s;
-				}
 				else {
 					yyerror("Incompatible addition");
+s->Token="error";
 				}
 				
 			}
@@ -641,35 +690,15 @@ simple_expression : term  {
 					s->type = "float";
 					$$ = s;
 				}
-				else if($1->type == "char" && $3->type == "char"){
-					s->ivalue = $1->c - $3->c;
-					s->type = "int";
-					$$ = s;
-				}
-				else if($1->type == "char" && $3->type == "int"){
-					s->ivalue = $1->c - $3->ivalue;
-					s->type = "int";
-					$$ = s;
-				}
-				else if($1->type == "int" && $3->type == "char"){
-					s->ivalue = $1->ivalue - $3->c;
-					s->type = "int";
-					$$ = s;
-				}
-				else if($1->type == "char" && $3->type == "float"){
-					s->fvalue = $1->c - $3->fvalue;
-					s->type = "float";
-					$$ = s;
-				}
-				else if($1->type == "float" && $3->type == "char"){
-					s->fvalue = $1->fvalue - $3->c;
-					s->type = "float";
-					$$ = s;
-				}
 				else {
 					yyerror("Incompatible addition");
+s->Token="error";
 				}
 			}
+}
+else {s->Token="error";}
+
+$$=s;
 		}
 		;
 					
@@ -680,55 +709,33 @@ term :	unary_expression {
      |  term MULOP unary_expression { 
 			fprintf(logout,"Line %d: term : term MULOP unary_expression\n\n",line_count);
 						SymbolInfo* s = new SymbolInfo();
+if($1->Token!="error" && $3->Token!="error"){
+
 fprintf(logout,"%s\n\n",$2->name.c_str());
 			if($2->name == "*"){
 				if($1->type == "int" && $3->type == "int"){
 					s->ivalue = $1->ivalue * $3->ivalue;
 					s->type = "int";
-					$$ = s;
+					//$$ = s;
 				}
 				else if($1->type == "int" && $3->type == "float"){
 					s->fvalue = $1->ivalue * $3->fvalue;
 					s->type = "float";
-					$$ = s;
+					//$$ = s;
 				}
 				else if($1->type == "float" && $3->type == "int"){
 					s->fvalue = $1->fvalue * $3->ivalue;
 					s->type = "float";
-					$$ = s;
+					//$$ = s;
 				}
 				else if($1->type == "float" && $3->type == "float"){
 					s->fvalue = $1->fvalue * $3->fvalue;
 					s->type = "float";
-					$$ = s;
-				}
-				else if($1->type == "char" && $3->type == "char"){
-					s->ivalue = $1->c * $3->c;
-					s->type = "int";
-					$$ = s;
-				}
-				else if($1->type == "char" && $3->type == "int"){
-					s->ivalue = $1->c * $3->ivalue;
-					s->type = "int";
-					$$ = s;
-				}
-				else if($1->type == "int" && $3->type == "char"){
-					s->ivalue = $1->ivalue * $3->c;
-					s->type = "int";
-					$$ = s;
-				}
-				else if($1->type == "char" && $3->type == "float"){
-					s->fvalue = $1->c * $3->fvalue;
-					s->type = "float";
-					$$ = s;
-				}
-				else if($1->type == "float" && $3->type == "char"){
-					s->fvalue = $1->fvalue * $3->c;
-					s->type = "float";
-					$$ = s;
+					//$$ = s;
 				}
 				else {
 					yyerror("Incompatible Multiplication");
+s->Token="error";
 				}
 				
 			}
@@ -736,50 +743,26 @@ fprintf(logout,"%s\n\n",$2->name.c_str());
 				if($1->type == "int" && $3->type == "int"){
 					s->ivalue = $1->ivalue / $3->ivalue;
 					s->type = "int";
-					$$ = s;
+					//$$ = s;
 				}
 				else if($1->type == "int" && $3->type == "float"){
 					s->fvalue = $1->ivalue / $3->fvalue;
 					s->type = "float";
-					$$ = s;
+					//$$ = s;
 				}
 				else if($1->type == "float" && $3->type == "int"){
 					s->fvalue = $1->fvalue / $3->ivalue;
 					s->type = "float";
-					$$ = s;
+					//$$ = s;
 				}
 				else if($1->type == "float" && $3->type == "float"){
 					s->fvalue = $1->fvalue / $3->fvalue;
 					s->type = "float";
-					$$ = s;
-				}
-				else if($1->type == "char" && $3->type == "char"){
-					s->ivalue = $1->c / $3->c;
-					s->type = "int";
-					$$ = s;
-				}
-				else if($1->type == "char" && $3->type == "int"){
-					s->ivalue = $1->c / $3->ivalue;
-					s->type = "int";
-					$$ = s;
-				}
-				else if($1->type == "int" && $3->type == "char"){
-					s->ivalue = $1->ivalue / $3->c;
-					s->type = "int";
-					$$ = s;
-				}
-				else if($1->type == "char" && $3->type == "float"){
-					s->fvalue = $1->c / $3->fvalue;
-					s->type = "float";
-					$$ = s;
-				}
-				else if($1->type == "float" && $3->type == "char"){
-					s->fvalue = $1->fvalue / $3->c;
-					s->type = "float";
-					$$ = s;
+					//$$ = s;
 				}
 				else {
 					yyerror("Incompatible Division");
+s->Token="error";
 				}
 				
 			}
@@ -791,49 +774,25 @@ fprintf(logout,"%s\n\n",$2->name.c_str());
 					s->ivalue = $1->ivalue % $3->ivalue;
 					cout<<s->ivalue<<endl;
 					s->type = "int";
-					$$ = s;
-				}
-				else if($1->type == "int" && $3->type == "float"){
-					yyerror("Warning! Cannot take mod of float or with a float");
-				}
-				else if($1->type == "float" && $3->type == "int"){
-					yyerror("Warning! Cannot take mod of float or with a float");
-				}
-				else if($1->type == "float" && $3->type == "float"){
-					yyerror("Warning! Cannot take mod of float or with a float");
-				}
-				else if($1->type == "char" && $3->type == "char"){
-					s->ivalue = $1->c % $3->c;
-					s->type = "int";
-					$$ = s;
-				}
-				else if($1->type == "char" && $3->type == "int"){
-					s->ivalue = $1->c % $3->ivalue;
-					s->type = "int";
-					$$ = s;
-				}
-				else if($1->type == "int" && $3->type == "char"){
-					s->ivalue = $1->ivalue % $3->c;
-					s->type = "int";
-					$$ = s;
-				}
-				else if($1->type == "char" && $3->type == "float"){
-					yyerror("Warning! Cannot take mod of float or with a float");
-				}
-				else if($1->type == "float" && $3->type == "char"){
-					yyerror("Warning! Cannot take mod of float or with a float");
+					//$$ = s;
 				}
 				else {
-					yyerror("Incompatible Modulation");
+					yyerror("Non-Integer operand on modulus operator");
+s->Token="error";
 				}
 				
 			}
-			
+}
+else {s->Token="error";}
+
+$$=s;			
 		}
      ;
 
 unary_expression : ADDOP unary_expression   { 
 				fprintf(logout,"Line %d: unary_expression : ADDOP unary_expression\n\n",line_count);
+SymbolInfo* temp = new SymbolInfo();
+if($2->Token!="error"){
 				if($2->name == "+"){
 					$$ = $2;
 				}
@@ -841,27 +800,23 @@ unary_expression : ADDOP unary_expression   {
 					if(type == "int"){
 						$$->ivalue = $2->ivalue * -1;
 					}
-					else if(type == "char"){
-						$$->c = $2->c * -1; //some cases are unhandled
-					}
 					else if(type == "float"){
 						$$->fvalue = $2->fvalue * -1;
 					}
 				}
-			}
-		 | NOT unary_expression  { 
-				fprintf(logout,"Line %d: unary_expression : NOT unary_expression\n\n",line_count);
-				SymbolInfo* temp = new SymbolInfo();
+			
+}
+else {temp->Token="error";}
+$$=temp;
+}
+		 | NOT unary_expression  {
+fprintf(logout,"Line %d: unary_expression : NOT unary_expression\n\n",line_count);
+SymbolInfo* temp = new SymbolInfo();
+
+				if($2->Token!="error"){				
+				
 				if(type == "int"){
 					if($2->ivalue) {
-						temp->ivalue = 0;
-					}
-					else{
-						temp->ivalue = 1;
-					}
-				}
-				else if(type == "char"){
-					if($2->c) {
 						temp->ivalue = 0;
 					}
 					else{
@@ -876,6 +831,9 @@ unary_expression : ADDOP unary_expression   {
 						temp->ivalue = 1;
 					}
 				}
+}
+else {temp->Token="error";}
+
 				$$ = temp;
 			}
 		 | factor  { 
@@ -884,48 +842,59 @@ unary_expression : ADDOP unary_expression   {
 			}
 		 ;
 	
-factor	: variable  { 
+factor	: variable  {
 			fprintf(logout,"Line %d: factor : variable\n\n",line_count);
 			$$=$1;
 		}
-	| ID LPAREN argument_list RPAREN { //ajoy have to do
+	| ID LPAREN argument_list RPAREN { 
 
 fprintf(logout,"Line %d: factor : ID LPAREN argument_list RPAREN\n\n",line_count);
+
+SymbolInfo* si = new SymbolInfo();
 SymbolInfo * s=table->Lookup($1->name);
 if(s!=NULL)
 {
 if(s->fp==NULL)
 {
-string temp=$1->name+" is not a Function!";
-yyerror(temp);
+yyerror($1->name+" is not a Function");
+si->Token="error";
 }
 else
 {
 
 if(s->fp->params.size()!=args.size())
 {
-fprintf(error,"Line %d: Parameters Size Mismatch of Function Call %s\n\n",line_count,$1->getName().c_str());	
+fprintf(logout,"Error at Line %d: Total Number of Arguments mismatch in funtion %s\n\n",line_count,$1->getName().c_str());
+yyerror("Total Number of Arguments mismatch in funtion "+$1->getName());	
+si->Token="error";
 }
 else{
 	for(int i=0;i<s->fp->params.size();i++)
 	{
 		if(s->fp->params[i].getType()!=args[i].getType())
 		{
-			fprintf(error,"Line %d: Parameters Mismatch of Function Call %s\n\n",line_count,$1->getName().c_str());					
+			fprintf(logout,"Error at Line %d: %dth argument mismatch in function %s\n\n",line_count,i+1,$1->getName().c_str());
+ostringstream oss;
+oss<<i+1<<"th argument mismatch in function "<<$2->getName();
+yyerror(oss.str());					
+si->Token="error";
 		}
 	}
-}
 
-SymbolInfo* si = new SymbolInfo($1->name,s->fp->retype);
-si->ivalue=0;
-si->fvalue=0;
-$$=si;
+si->name=$1->name;
+si->type=s->fp->retype;
+}
 }
 }
 else
 {
-yyerror("Undeclared Function "+$1->name+" call!");
+yyerror("Undeclared Function "+$1->name);
+si->Token="error";
 }
+
+si->ivalue=0;
+si->fvalue=0;
+$$=si;
 args.clear();
 	}
 
@@ -943,11 +912,6 @@ args.clear();
 			fprintf(logout,"%lf\n\n",$1->fvalue);
 			$$ = $1;
 		}
-	| CONST_CHAR { 
-			fprintf(logout,"Line %d: factor : CONST_CHAR\n",line_count);
-			fprintf(logout,"%c\n\n",$1->c);
-			$$ = $1;
-		}
 	| variable INCOP  { 
 			fprintf(logout,"Line %d: factor : variable INCOP\n\n",line_count);
 			if(type == "int"){
@@ -955,9 +919,6 @@ args.clear();
 			}
 			else if(type == "float"){
 				$1->fvalue++;
-			}
-			else if(type == "char"){
-				$1->c++;
 			}
 		}
 	| variable DECOP {  
@@ -968,13 +929,19 @@ args.clear();
 			else if(type == "float"){
 				$1->fvalue--;
 			}
-			else if(type == "char"){
-				$1->c--;
-			}
 		}
 	;
 
-argument_list : argument_list COMMA logic_expression
+argument_list : arguments {
+fprintf(logout,"Line %d: argument_list : argumets\n\n",line_count);
+}
+                    | {
+fprintf(logout,"Line %d: argument_list : empty\n\n",line_count);
+}
+                    ;
+
+
+arguments : arguments COMMA logic_expression
 {
 fprintf(logout,"Line %d: argument_list : argument_list COMMA logic_expression\n\n",line_count);
 args.push_back(*($3));
@@ -984,13 +951,9 @@ args.push_back(*($3));
 fprintf(logout,"Line %d: argument_list : logic_expression\n\n",line_count);
 args.push_back(*($1));
 }
-	      |
-{
-fprintf(logout,"Line %d: argument_list : empty\n\n",line_count);
-}
+
 	      ;
 		
-
 
 %%
 
