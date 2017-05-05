@@ -22,10 +22,12 @@ string type;
 string functype;
 Function *fn=NULL;
 vector<SymbolInfo> params,args;
+bool paramerr=false;
 
 void yyerror(string s){
 	errorcount++;
 fprintf(error,"Error at Line %d: %s \n\n",line_count,s.c_str());
+fprintf(logout,"Error at Line %d: %s \n\n",line_count,s.c_str());
 }
 
 %}
@@ -85,6 +87,12 @@ func_declaration : type_specifier ID LPAREN parameter_list RPAREN SEMICOLON
 fprintf(logout,"%s\n\n",$2->getName().c_str());
 		//cout<<"func_declaration :$1= "<<$1->getName()<<endl;
 		//functype=$1->getName();
+if(paramerr==true)
+{
+yyerror("Parameters can't be declared without name in function"+$2->getName());
+paramerr=false;
+}
+else {
 		if(table->Lookup($2->getName())==NULL)
 		{
 			table->Insert($2->getName(),"function");
@@ -96,16 +104,24 @@ fprintf(logout,"%s\n\n",$2->getName().c_str());
 		} 
 		else
 		{
-			fprintf(logout,"Error at Line %d: Multiple declaration Function %s\n\n",line_count,$2->getName().c_str());
+			//fprintf(logout,"Error at Line %d: Multiple declaration Function %s\n\n",line_count,$2->getName().c_str());
 			yyerror("Multiple declaration Function "+$2->getName());
 		}
 		fn=NULL;
-		params.clear();
-	}  
+		
+}
+params.clear();
+ }
 		 	;
 		 
 func_definition : type_specifier ID LPAREN parameter_list RPAREN 
 	{
+if(paramerr==true)
+{
+yyerror("Parameters can't be declared without name in function "+$2->getName());
+paramerr=false;
+}
+else {
 //cout<<"func_definition: $1= "<<$1->getName()<<endl;
 //functype=$1->getName();
 		cout<<"func_definition:\n";
@@ -127,7 +143,7 @@ func_definition : type_specifier ID LPAREN parameter_list RPAREN
 			if(si->fp->retype==$1->getName())
 			{
 				if(si->fp->params.size()!=params.size()){
-fprintf(logout,"Error at Line %d: Parameters Size Mismatch of Function %s\n\n",line_count,$2->getName().c_str());	
+//fprintf(logout,"Error at Line %d: Parameters Size Mismatch of Function %s\n\n",line_count,$2->getName().c_str());	
 yyerror("Parameters Size Mismatch of Function "+$2->getName());
 }
 				else{
@@ -135,7 +151,7 @@ yyerror("Parameters Size Mismatch of Function "+$2->getName());
 					{
 						if(si->fp->params[i].getName()!=params[i].getName()||si->fp->params[i].getType()!=params[i].getType())
 						{
-							fprintf(logout,"Error at Line %d: %dth parameter Mismatch of Function %s\n\n",line_count,i+1,$2->getName().c_str());
+							//fprintf(logout,"Error at Line %d: %dth parameter Mismatch of Function %s\n\n",line_count,i+1,$2->getName().c_str());
 ostringstream oss;
 oss<<i+1<<"th parameter Mismatch of Function "<<$2->getName();
 yyerror(oss.str());					
@@ -148,7 +164,7 @@ yyerror(oss.str());
 yyerror("Return-type Mismatch of Function "+$2->getName());
 			}
 		}
-
+}
 		//cout<<"Rparen end\n";
 		params.clear();
 
@@ -169,6 +185,7 @@ parameter_list  : parameter_list COMMA type_specifier ID
 	| parameter_list COMMA type_specifier	 
 {
 	fprintf(logout,"Line %d: parameter_list  : parameter_list COMMA type_specifier\n\n",line_count);
+	paramerr=true;
 }
 
  	| type_specifier ID
@@ -182,11 +199,11 @@ parameter_list  : parameter_list COMMA type_specifier ID
  	| type_specifier
 {
  	fprintf(logout,"Line %d: parameter_list  : type_specifier\n\n",line_count);
-}
-
-	|
+	paramerr=true;
+}  
+	|   
 {
-	fprintf(logout,"Line %d: parameter_list  : empty\n\n",line_count);
+ 	fprintf(logout,"Line %d: parameter_list  : empty\n\n",line_count);
 }
  		;
 
@@ -423,6 +440,12 @@ variable : ID	{
 temp=new SymbolInfo();
 temp->Token="error";
 			}
+else if(temp->arraysize!=-1)
+{
+yyerror("Array can't be used without index in "+$1->getName());
+temp = new SymbolInfo();
+temp->Token="error";
+}
 			$$ = temp;
 		}
 		| ID LTHIRD expression RTHIRD  {
@@ -432,20 +455,30 @@ SymbolInfo* temp = new SymbolInfo();
 
 if($3->Token!="error"){
 			cout<<$1->getName()<<endl;
-			SymbolInfo* temp = table->Lookup($1->getName());
+			temp = table->Lookup($1->getName());
 			if (temp == NULL){
-				yyerror("Undeclared variable! ");
+				yyerror("Undeclared variable "+$1->getName());
+temp = new SymbolInfo();
 temp->Token="error";
 			}
 			else if($3->type!="int"){
-yyerror("Array index must be integer!");
+yyerror("Array index must be integer"+$1->getName());
+temp = new SymbolInfo();
 temp->Token="error";
+}
+else if(temp->arraysize==-1)
+{
+yyerror("Non-Array variable can't be used with index "+$1->getName());
+temp = new SymbolInfo();
+temp->Token="error";
+cout<<"Temp Token ="<<temp->Token<<endl;
 }
 else{
 				cout<<"Array index: "<<$3->ivalue<<endl;
 cout<<"Temp Array Size = "<<temp->arraysize<<endl;
 				if($3->ivalue >= temp->arraysize){
 					yyerror("Array size overbound\n");
+temp = new SymbolInfo();
 temp->Token="error";
 				}
 				else {
@@ -456,6 +489,7 @@ temp->Token="error";
 			}
 		}
 else {temp->Token="error";}
+cout<<"Temp Token 2="<<temp->Token<<endl;
 $$=temp;
 
 }
@@ -470,6 +504,7 @@ expression : logic_expression {
 			fprintf(logout,"Line %d: expression : variable ASSINOP logic_expression\n\n",line_count);
 SymbolInfo* temp = new SymbolInfo();
 
+cout<<"Variable Token= "<<$1->Token<<endl;
 if($1->Token!="error" && $3->Token!="error"){
 			//Print the symboltable here
 			cout<<"Variable : "<<$1->name<<" "<<$1->ivalue<<" "<<$1->type<<endl;
@@ -478,7 +513,11 @@ if($1->Token!="error" && $3->Token!="error"){
 				if($3->type == "int"){
 					$1->ivalue = $3->ivalue;
 				}
-				else {
+				else if($3->type=="void"){ 
+yyerror("Calling void function in an expression is not allowed");
+temp->Token="error";
+}
+				else{
 					yyerror("Type Mismatch");
 temp->Token="error";
 				}
@@ -490,6 +529,10 @@ temp->Token="error";
 				else if($3->type == "float"){
 					$1->fvalue = $3->fvalue;
 				}
+			else if($3->type=="void"){ 
+yyerror("Calling void function in an expression is not allowed");
+temp->Token="error";
+}
 				else {
 					yyerror("Type Mismatch");
 temp->Token="error";
@@ -857,6 +900,7 @@ if(s!=NULL)
 if(s->fp==NULL)
 {
 yyerror($1->name+" is not a Function");
+si = new SymbolInfo();
 si->Token="error";
 }
 else
@@ -864,8 +908,9 @@ else
 
 if(s->fp->params.size()!=args.size())
 {
-fprintf(logout,"Error at Line %d: Total Number of Arguments mismatch in funtion %s\n\n",line_count,$1->getName().c_str());
+//fprintf(logout,"Error at Line %d: Total Number of Arguments mismatch in funtion %s\n\n",line_count,$1->getName().c_str());
 yyerror("Total Number of Arguments mismatch in funtion "+$1->getName());	
+si = new SymbolInfo();
 si->Token="error";
 }
 else{
@@ -873,10 +918,11 @@ else{
 	{
 		if(s->fp->params[i].getType()!=args[i].getType())
 		{
-			fprintf(logout,"Error at Line %d: %dth argument mismatch in function %s\n\n",line_count,i+1,$1->getName().c_str());
+			//fprintf(logout,"Error at Line %d: %dth argument mismatch in function %s\n\n",line_count,i+1,$1->getName().c_str());
 ostringstream oss;
 oss<<i+1<<"th argument mismatch in function "<<$2->getName();
-yyerror(oss.str());					
+yyerror(oss.str());	
+si = new SymbolInfo();				
 si->Token="error";
 		}
 	}
@@ -889,6 +935,7 @@ si->type=s->fp->retype;
 else
 {
 yyerror("Undeclared Function "+$1->name);
+si = new SymbolInfo();
 si->Token="error";
 }
 
@@ -912,7 +959,9 @@ args.clear();
 			fprintf(logout,"%lf\n\n",$1->fvalue);
 			$$ = $1;
 		}
-	| variable INCOP  { 
+	| variable INCOP  {
+if($1->Token!="error")
+{ 
 			fprintf(logout,"Line %d: factor : variable INCOP\n\n",line_count);
 			if(type == "int"){
 				$1->ivalue++;
@@ -920,8 +969,12 @@ args.clear();
 			else if(type == "float"){
 				$1->fvalue++;
 			}
-		}
-	| variable DECOP {  
+}
+$$=$1;
+}
+	| variable DECOP { 
+if($1->Token!="error")
+{ 
 			fprintf(logout,"Line %d: factor : variable DECOP\n\n",line_count);
 			if(type == "int"){
 				$1->ivalue--;
@@ -929,14 +982,18 @@ args.clear();
 			else if(type == "float"){
 				$1->fvalue--;
 			}
-		}
+}
+$$=$1;
+}
 	;
 
 argument_list : arguments {
 fprintf(logout,"Line %d: argument_list : argumets\n\n",line_count);
+$$=$1;
 }
                     | {
 fprintf(logout,"Line %d: argument_list : empty\n\n",line_count);
+$$= new SymbolInfo();
 }
                     ;
 
@@ -944,12 +1001,21 @@ fprintf(logout,"Line %d: argument_list : empty\n\n",line_count);
 arguments : arguments COMMA logic_expression
 {
 fprintf(logout,"Line %d: argument_list : argument_list COMMA logic_expression\n\n",line_count);
+if($1->Token!="error" && $3->Token!="error"){
 args.push_back(*($3));
+$$= new SymbolInfo();
+}
+else if($1->Token=="error")$$=$1;
+else $$=$3;
 }
 	      | logic_expression
 {
 fprintf(logout,"Line %d: argument_list : logic_expression\n\n",line_count);
+
+if($1->Token!="error"){
 args.push_back(*($1));
+}
+$$=$1;
 }
 
 	      ;

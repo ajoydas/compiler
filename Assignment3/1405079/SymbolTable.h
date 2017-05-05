@@ -231,34 +231,40 @@ public:
                     for(int i=0;i<currSymbol->arraysize;i++)
                     {
                         if(currSymbol->type=="int"){
-                            fprintf(logout,"%d,",currSymbol->array[i]->ivalue);
-                            if(symtabprint)fprintf(symtable,"%d,",currSymbol->array[i]->ivalue);
+                            fprintf(logout,"%d",currSymbol->array[i]->ivalue);
+                            if(symtabprint)fprintf(symtable,"%d",currSymbol->array[i]->ivalue);
                         }
                         else if(currSymbol->type=="float")
                         {   
-                            fprintf(logout,"%f,",currSymbol->array[i]->fvalue);
-                            if(symtabprint)fprintf(symtable,"%f,",currSymbol->array[i]->fvalue);
+                            fprintf(logout,"%f",currSymbol->array[i]->fvalue);
+                            if(symtabprint)fprintf(symtable,"%f",currSymbol->array[i]->fvalue);
                         }
+						if(i!=currSymbol->arraysize-1)
+						{
+							fprintf(logout,", ");
+                            if(symtabprint)fprintf(symtable,", ");
+						}
                     }
-                    fprintf(logout," }>\n");
-                    if(symtabprint)fprintf(symtable," }>\n");
+                    fprintf(logout," }>");
+                    if(symtabprint)fprintf(symtable," }>");
     			}
                 else if(currSymbol->fp!=NULL){
-                    fprintf(logout,">\n");
-                    if(symtabprint)fprintf(symtable,">\n");
+                    fprintf(logout,">");
+                    if(symtabprint)fprintf(symtable,">");
                 }
                 else if(currSymbol->type=="int"){
-                    fprintf(logout,", %d >\n",currSymbol->ivalue);
-                    if(symtabprint)fprintf(symtable,", %d >\n",currSymbol->ivalue);
+                    fprintf(logout,", %d >",currSymbol->ivalue);
+                    if(symtabprint)fprintf(symtable,", %d >",currSymbol->ivalue);
                 }
                 else if(currSymbol->type=="float"){
-                    fprintf(logout,", %f >\n",currSymbol->fvalue);
-                    if(symtabprint)fprintf(symtable,", %f >\n",currSymbol->fvalue);
+                    fprintf(logout,", %f >",currSymbol->fvalue);
+                    if(symtabprint)fprintf(symtable,", %f >",currSymbol->fvalue);
                 }
              
                 currSymbol = currSymbol->next;
             }
-            //fprintf(logout,"\n");
+            fprintf(logout,"\n");
+            if(symtabprint)fprintf(symtable,"\n");
         }
 	fprintf(logout,"\n");
     if(symtabprint)fprintf(symtable,"\n");
@@ -316,13 +322,16 @@ class SymbolTable
 {
 public:
     ScopeTable *currScope;
+	int id=0;
     SymbolTable(int n,int id)
     {
         currScope=new ScopeTable(n,id);
+		this->id=id;
     }
     void EnterScope()
     {
-        ScopeTable* temp=new ScopeTable(currScope->n,currScope->id+1);
+		id++;
+        ScopeTable* temp=new ScopeTable(currScope->n,id);
         temp->parentScope=currScope;
         currScope=temp;
         cout<<"New ScopeTable with id "<<currScope->id<<" created"<<endl;
@@ -333,6 +342,7 @@ public:
         ScopeTable* temp=currScope;
         currScope=currScope->parentScope;
         cout<<"ScopeTable with id "<<temp->id<<" removed"<<endl;
+        temp->FreeSpace();
         delete(temp);
     }
     void FreeSpace()
