@@ -31,7 +31,7 @@ fprintf(logout,"Error at Line %d: %s \n\n",line_count,s.c_str());
 }
 
 %}
-
+%define parse.error verbose
 %token IF FOR DO INT FLOAT VOID SWITCH DEFAULT ELSE  WHILE BREAK RETURN CASE CONTINUE PRINTLN CONST_INT CONST_FLOAT ID ADDOP MULOP INCOP DECOP RELOP ASSINOP LOGICOP NOT LPAREN RPAREN LCURL RCURL LTHIRD RTHIRD COMMA SEMICOLON SINGLECOM MULTICOM 
 
 
@@ -60,6 +60,7 @@ program : program unit
 	{
 		fprintf(logout,"Line %d: program : unit\n\n",line_count);
 	}
+| error unit {fprintf(logout,"Line %d: unit : error unit\n\n",line_count);}
 	;
 	
 unit :var_declaration
@@ -77,7 +78,12 @@ unit :var_declaration
      	func_definition
      	{
 			fprintf(logout,"Line %d: unit : func_definition\n\n",line_count);
+/*
+| error SEMICOLON {fprintf(logout,"Line %d: unit : error SEMICOLON\n\n",line_count);}
+		| error RCURL {fprintf(logout,"Line %d: unit : error RCURL\n\n",line_count);}
+*/
      	}
+		
      	;
      
 func_declaration : type_specifier ID LPAREN parameter_list RPAREN SEMICOLON
@@ -95,13 +101,27 @@ paramerr=false;
 else {
 		if(table->Lookup($2->getName())==NULL)
 		{
+bool flag=true;
+for(int i=0;i<params.size();i++)
+{
+if(params[i].name==$2->getName()){
+flag=false;
+ostringstream oss;
+oss<<"Function name matched with "<<i+1<<"th parameter in "<<$2->getName();
+yyerror(oss.str());	
+break;
+}
+}
+if(flag){
+
 			table->Insert($2->getName(),"function");
 			SymbolInfo *s=table->Lookup($2->getName());
 			s->fp=new Function();
 			s->fp->retype= $1->getName();
 			s->fp->params=params;
 			s->Print(); 
-		} 
+		}
+} 
 		else
 		{
 			//fprintf(logout,"Error at Line %d: Multiple declaration Function %s\n\n",line_count,$2->getName().c_str());
@@ -128,6 +148,19 @@ else {
 		SymbolInfo *si=table->Lookup($2->getName());
 		if(si==NULL)
 		{
+bool flag=true;
+for(int i=0;i<params.size();i++)
+{
+if(params[i].name==$2->getName()){
+flag=false;
+ostringstream oss;
+oss<<"Function name matched with "<<i+1<<"th parameter in "<<$2->getName();
+yyerror(oss.str());	
+break;
+}
+}
+if(flag){
+
 			table->Insert($2->getName(),"function");
 			SymbolInfo *s=table->Lookup($2->getName());
 			s->fp=new Function();
@@ -135,6 +168,7 @@ else {
 			s->fp->params=params;
 			fn=s->fp;
 			s->Print();
+}
 		}
 		else
 		{
@@ -156,6 +190,12 @@ ostringstream oss;
 oss<<i+1<<"th parameter Mismatch of Function "<<$2->getName();
 yyerror(oss.str());					
 						}
+if(params[i].name==$2->getName()){
+ostringstream oss;
+oss<<"Function name matched with "<<i+1<<"th parameter in "<<$2->getName();
+yyerror(oss.str());	
+break;
+}
 					}
 				}
 			}
@@ -425,7 +465,9 @@ fprintf(logout,"Line %d: statement  : var_declaration\n\n",line_count);
 	   | WHILE LPAREN expression RPAREN statement  { fprintf(logout,"Line %d: statement : WHILE LPAREN expression RPAREN statement\n\n",line_count); }
 	   | PRINTLN LPAREN ID RPAREN SEMICOLON  { fprintf(logout,"Line %d: statement : PRINTLN LPAREN ID RPAREN SEMICOLON\n\n",line_count); }
 	   | RETURN expression SEMICOLON  { fprintf(logout,"Line %d: statement : RETURN expression SEMICOLON \n\n",line_count); }
-	   ;
+	   
+	   | error SEMICOLON {}
+;
 		
 expression_statement	: SEMICOLON		 { fprintf(logout,"Line %d: expression_statement	: SEMICOLON\n\n",line_count); }	
 			| expression SEMICOLON  { fprintf(logout,"Line %d: expression_statement	: expression SEMICOLON\n\n",line_count); cout<<"Variable : "<<$1->name<<" "<<$1->ivalue<<endl;}
