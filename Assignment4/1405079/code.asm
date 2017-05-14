@@ -1,6 +1,11 @@
 .model small
 .stack 100h
 .data
+x1 dw ?
+y2 dw ?
+z2 dw ?
+a2 dw ?
+, ?b2 dw ?
 
 .code
 PRINTLN PROC

@@ -468,12 +468,18 @@ statements RCURL {
 	}
 		   ;
 
-var_declaration	: type_specifier declaration_list SEMICOLON { fprintf(logout,"Line %d: var_declaration	: type_specifier declaration_list SEMICOLON\n\n",line_count); }
+var_declaration	: type_specifier declaration_list SEMICOLON {
+	 fprintf(logout,"Line %d: var_declaration	: type_specifier declaration_list SEMICOLON\n\n",line_count);
+	 $$=$2;
+ }
 
 type_specifier	: INT  { fprintf(logout,"Line %d: type_specifier : INT \n\n",line_count); type="int"; $$=new SymbolInfo("int",type); }
 		| FLOAT { fprintf(logout,"Line %d: type_specifier : FLOAT\n\n",line_count); type="float";$$=new SymbolInfo("float",type); }
 		| VOID { fprintf(logout,"Line %d: type_specifier : VOID\n\n",line_count); type="void";$$=new SymbolInfo("void",type); }
 		;
+
+
+
 
 declaration_list : declaration_list COMMA ID  {
 				fprintf(logout,"Line %d: declaration_list : declaration_list COMMA ID\n",line_count);
@@ -489,6 +495,11 @@ if($1->Token!="error"){
 						yyerror("Multple declaration! ");
 temp->Token="error";
 					}
+					else
+					{
+						temp->address=newAdd($3->name,table->id);
+						declaration += temp->address+ " dw ?\n";
+					}
 				}
 				if(type == "float"){
 					SymbolInfo* s = new SymbolInfo($3->getName(), "float");
@@ -496,6 +507,11 @@ temp->Token="error";
 					if(table->Insert(s) == 0){
 						yyerror("Multple declaration! ");
 temp->Token="error";
+					}
+					else
+					{
+						temp->address=newAdd($3->name,table->id);
+						declaration += temp->address+ " dw ?\n";
 					}
 				}
 				if(type == "void"){
@@ -506,7 +522,12 @@ temp->Token="error";
 else {temp->Token="error";}
 
 $$=temp;
+
+
 			}
+
+
+
 		 | declaration_list COMMA ID LTHIRD CONST_INT RTHIRD {
 				fprintf(logout,"Line %d: declaration_list : declaration_list COMMA ID LTHIRD CONST_INT RTHIRD\n",line_count);
 				fprintf(logout,"%s\n%d\n\n",$3->getName().c_str(),$5->ivalue);
@@ -529,6 +550,14 @@ s->array[i]=new SymbolInfo("","int");
 						yyerror("Multple declaration! ");
 temp->Token="error";
 					}
+					else
+					{
+						temp->address=newAdd($3->name,table->id);
+						declaration += temp->address+ " dw ?\n";
+						for(int i =0; i<$5->ivalue; i++){
+							declaration += ", ?";
+						}
+					}
 
 				}
 				if(type == "float"){
@@ -544,6 +573,14 @@ s->array[i]=new SymbolInfo("","float");
 						yyerror("Multple declaration! ");
 temp->Token="error";
 					}
+					else
+					{
+						temp->address=newAdd($3->name,table->id);
+						declaration += temp->address+ " dw ?\n";
+						for(int i =0; i<$5->ivalue; i++){
+							declaration += ", ?";
+						}
+					}
 				}
 				if(type == "void"){
 					yyerror("A variable cannot be declared as void!");
@@ -554,6 +591,8 @@ else {temp->Token="error";}
 
 $$=temp;
 			}
+
+
 		 | ID  {
 				fprintf(logout,"Line %d: declaration_list : ID\n",line_count);
 				fprintf(logout,"%s\n\n",$1->getName().c_str());
@@ -566,6 +605,11 @@ SymbolInfo* temp = new SymbolInfo();
 						yyerror("Multple declaration! ");
 temp->Token="error";
 					}
+					else
+					{
+						temp->address=newAdd($1->name,table->id);
+						declaration += temp->address+ " dw ?\n";
+					}
 				}
 				if(type == "float"){
 					SymbolInfo* s = new SymbolInfo($1->getName(), "float");
@@ -573,6 +617,11 @@ temp->Token="error";
 					if(table->Insert(s) == 0){
 						yyerror("Multple declaration! ");
 temp->Token="error";
+					}
+					else
+					{
+						temp->address=newAdd($1->name,table->id);
+						declaration += temp->address+ " dw ?\n";
 					}
 				}
 				if(type == "void"){
@@ -602,6 +651,14 @@ s->array[i]=new SymbolInfo("element","int");
 						yyerror("Multple declaration! ");
 temp->Token="error";
 					}
+					else
+					{
+						temp->address=newAdd($1->name,table->id);
+						declaration += temp->address+ " dw ?\n";
+						for(int i =0; i<$3->ivalue; i++){
+							declaration += ", ?";
+						}
+					}
 				}
 				if(type == "float"){
 					SymbolInfo* s = new SymbolInfo($1->name, "float");
@@ -616,6 +673,14 @@ s->array[i]=new SymbolInfo("","float");
 						yyerror("Multple declaration! ");
 temp->Token="error";
 					}
+					else
+					{
+						temp->address=newAdd($1->name,table->id);
+						declaration += temp->address+ " dw ?\n";
+						for(int i =0; i<$3->ivalue; i++){
+							declaration += ", ?";
+						}
+					}
 				}
 				if(type == "void"){
 					yyerror("A variable cannot be declared as void!");
@@ -626,28 +691,120 @@ $$=temp;
 			}
 		 ;
 
-statements : statement  { fprintf(logout,"Line %d: statements : statement\n\n",line_count); }
-	   | statements statement  { fprintf(logout,"Line %d: statements : statements statement\n\n",line_count); }
+statements : statement  {
+	fprintf(logout,"Line %d: statements : statement\n\n",line_count);
+	$$=$1;
+ }
+	   | statements statement  {
+		   fprintf(logout,"Line %d: statements : statements statement\n\n",line_count);
+		   $$=$1;
+		   $$->code += $2->code;
+	   }
 	   ;
 
 
 statement  : var_declaration {
 fprintf(logout,"Line %d: statement  : var_declaration\n\n",line_count);
 }
-	   | expression_statement  {fprintf(logout,"Line %d: statement : expression_statement\n\n",line_count); }
-	   | compound_statement  { fprintf(logout,"Line %d: statement : compound_statement\n\n",line_count); }
-	   | FOR LPAREN expression_statement expression_statement expression RPAREN statement  { fprintf(logout,"Line %d: statement : FOR LPAREN expression_statement expression_statement expression RPAREN statement\n\n",line_count); }
-	   | IF LPAREN expression RPAREN statement %prec only_if { fprintf(logout,"Line %d: statement :  IF LPAREN expression RPAREN statement\n\n",line_count); }
-	   | IF LPAREN expression RPAREN statement ELSE statement { fprintf(logout,"Line %d: statement : IF LPAREN expression RPAREN statement ELSE statement\n\n",line_count); }
-	   | WHILE LPAREN expression RPAREN statement  { fprintf(logout,"Line %d: statement : WHILE LPAREN expression RPAREN statement\n\n",line_count); }
-	   | PRINTLN LPAREN ID RPAREN SEMICOLON  { fprintf(logout,"Line %d: statement : PRINTLN LPAREN ID RPAREN SEMICOLON\n\n",line_count); }
-	   | RETURN expression SEMICOLON  { fprintf(logout,"Line %d: statement : RETURN expression SEMICOLON \n\n",line_count); }
+	   | expression_statement  {
+		   fprintf(logout,"Line %d: statement : expression_statement\n\n",line_count);
+		   $$=$1;
+	   }
+	   | compound_statement  {
+		   fprintf(logout,"Line %d: statement : compound_statement\n\n",line_count);
+		   $$=$1;
+	   }
+	   | FOR LPAREN expression_statement expression_statement expression RPAREN statement  {
+		    fprintf(logout,"Line %d: statement : FOR LPAREN expression_statement expression_statement expression RPAREN statement\n\n",line_count);
+			$$=$3;
+			char*  label1=newLabel();
+		  	char*  label2=newLabel();
 
-	   | error SEMICOLON {}
+			$$->code += string(label1)+":\n";
+			$$->code += $4->code;
+			$$->code += "cmp "+ $4->address+", 1\n\t";
+			$$->code += "jne "+string(label2)+"\n\t";
+			$$->code += $7->code;
+			$$->code += $5->code;
+			$$->code += string(label2)+":\n\n\t";
+		}
+	   | IF LPAREN expression RPAREN statement %prec only_if {
+		    fprintf(logout,"Line %d: statement :  IF LPAREN expression RPAREN statement\n\n",line_count);
+			$$=$3;
+
+ 			char*  label=newLabel();
+
+			$$->code+="mov ax, "+  $3->address +"\n\t";
+			$$->code+="cmp ax, 0\n\t";
+			$$->code+="je "+string(label)+"\n\t";
+			$$->code+=$5->code;
+			$$->code+=string(label)+":\n\n\t";
+		 }
+	   | IF LPAREN expression RPAREN statement ELSE statement {
+		   fprintf(logout,"Line %d: statement : IF LPAREN expression RPAREN statement ELSE statement\n\n",line_count);
+		   $$=$3;
+
+		   char*  label1=newLabel();
+		   char*  label2=newLabel();
+
+		   $$->code+="mov ax, "+ $3->address +"\n\t";
+		   $$->code+="cmp ax, 0\n\t";
+		   $$->code+="je "+string(label1)+"\n\t";
+		   $$->code+=$5->code;
+		   $$->code+="jmp " + string(label2)+"\n\t";
+		   $$->code+=string(label1)+":\n\t";
+		   $$->code+=$7->code;
+		   $$->code+=string(label2)+":\n\n\t";
+	    }
+	   | WHILE LPAREN expression RPAREN statement  {
+		    fprintf(logout,"Line %d: statement : WHILE LPAREN expression RPAREN statement\n\n",line_count);
+			$$=new SymbolInfo();
+			char* label1 = newLabel();
+			char* label2 = newLabel();
+
+			$$->code += $3->code;
+			$$->code += string(label1)+":\n";
+
+			$$->code += "cmp "+ $3->address +", 1\n\t";
+			$$->code += "jne "+string(label2)+"\n\t";
+			$$->code += $5->code;
+			$$->code += "jmp "+string(label1)+"\n\t";
+			$$->code += string(label2)+":\n\n\t";
+		 }
+	   | PRINTLN LPAREN ID RPAREN SEMICOLON  {
+		   fprintf(logout,"Line %d: statement : PRINTLN LPAREN ID RPAREN SEMICOLON\n\n",line_count);
+		   $$=new SymbolInfo();
+		   $$->code += $3->code;
+		   $$->address=newAdd($3->name,table->id);
+		   $$->code += "mov ax, "+$$->address+"\n\t";
+		   $$->code += "call PRINTLN\n\t";
+	   }
+	   | RETURN expression SEMICOLON  {
+		   fprintf(logout,"Line %d: statement : RETURN expression SEMICOLON \n\n",line_count);
+		   // write code for return.
+		   $$=$1;
+	   }
+
+	   | error SEMICOLON {
+		   $$=new SymbolInfo();
+	   	$$->name = ";";
+	   	$$->Token = "SEMICOLON";
+	   	$$->code="";
+	   }
 ;
 
-expression_statement	: SEMICOLON		 { fprintf(logout,"Line %d: expression_statement	: SEMICOLON\n\n",line_count); }
-			| expression SEMICOLON  { fprintf(logout,"Line %d: expression_statement	: expression SEMICOLON\n\n",line_count); cout<<"Variable : "<<$1->name<<" "<<$1->ivalue<<endl;}
+expression_statement	: SEMICOLON		 {
+	fprintf(logout,"Line %d: expression_statement	: SEMICOLON\n\n",line_count);
+	$$=new SymbolInfo();
+	$$->name = ";";
+	$$->Token = "SEMICOLON";
+	$$->code="";
+}
+			| expression SEMICOLON  {
+				fprintf(logout,"Line %d: expression_statement	: expression SEMICOLON\n\n",line_count);
+				cout<<"Variable : "<<$1->name<<" "<<$1->ivalue<<endl;
+ 			 	$$=$1;
+			 }
 			;
 
 variable : ID	{
@@ -788,6 +945,16 @@ temp->Token="error";
 else {temp->Token="error";}
 
 $$=temp;
+
+	$$->code=$3->code+$1->code;
+	$$->code+="mov ax, "+$3->address+"\n";
+	if($$->arraysize==-1){
+		$$->code+= "mov "+$1->address+", ax\n";
+	}
+
+	else{
+		$$->code+= "mov  "+$1->address+"[bx], ax\n";
+	}
 }
 
 	   ;
@@ -829,6 +996,32 @@ if($1->Token!="error" && $3->Token!="error"){
 else {s->Token="error";}
 
 $$=s;
+
+	$$->code=$1->code;
+	$$->code+=$3->code;
+	char *t=newTemp();
+
+	declaration += string(t) + " dw ?\n";
+	char *label1=newLabel();
+	char *label2=newLabel();
+	char *label3=newLabel();
+
+	$$->code +="mov ax, " + $1->address +"\n\t";
+	$$->code +="mov bx, " + $3->address +"\n\t";
+
+	if($2->name == "&&"){
+		$$->code += "cmp ax, 0\nje "+string(label1)+"cmp bx, 0\nje "+string(label1);
+		$$->code += string(label2)+":\nmov "+ string(t)+", 1\njmp "+string(label3);
+		$$->code += string(label1)+":\nmov "+ string(t)+", 0\n\t";
+	}
+	else if ($2->name == "||"){
+		$$->code += "cmp ax, 0\njne "+string(label1)+"cmp bx, 0\njne "+string(label1);
+		$$->code += string(label2)+":\nmov "+ string(t)+", 0\njmp "+string(label3);
+		$$->code += string(label1)+":\nmov "+ string(t)+", 1\n\t";
+	}
+	$$->code += string(label3)+":\n";
+	$$->address = string(t);
+
 		}
 		;
 
@@ -899,6 +1092,38 @@ s->Token="error";
 else {s->Token="error";}
 
 $$=s;
+	$$->code=$1->code;
+	$$->code+=$3->code;
+	$$->code+="mov ax, " + $1->address+"\n";
+	$$->code+="cmp ax, " + $3->address+"\n";
+	char *t=newTemp();
+	char *label1=newLabel();
+	char *label2=newLabel();
+	if($2->name=="<"){
+		$$->code+="jl " + string(label1)+"\n";
+	}
+	else if($2->name=="<="){
+		$$->code+="jle " + string(label1)+"\n";
+	}
+	else if($2->name==">"){
+		$$->code+="jg " + string(label1)+"\n";
+	}
+	else if($2->name==">="){
+		$$->code+="jge " + string(label1)+"\n";
+	}
+	else if($2->name=="=="){
+		$$->code+="je " + string(label1)+"\n";
+	}
+	else{
+		$$->code+="jne " + string(label1)+"\n";
+	}
+
+	$$->code+="mov "+string(t) +", 0\n";
+	$$->code+="jmp "+string(label2) +"\n";
+	$$->code+=string(label1)+":\nmov "+string(t)+", 1\n";
+	$$->code+=string(label2)+":\n";
+	$$->address=string(t);
+
 }
 
 
@@ -970,6 +1195,23 @@ s->Token="error";
 else {s->Token="error";}
 
 $$=s;
+
+$$->code = $1->code;
+$$->code += $3->code;
+char *t=newTemp();
+declaration += string(t) + " dw ?\n";
+if($2->name=="+"){
+	$$->code += "MOV AX, " + $1->address + "\n\t";
+	$$->code += "ADD AX, " + $3->address + "\n\t";
+	$$->code += "MOV "+ string(t) + ", AX\n\t";
+}
+else {
+	$$->code += "MOV AX, " + $1->address + "\n\t";
+	$$->code += "SUB AX, " + $3->address + "\n\t";
+	$$->code += "MOV "+ string(t) + ", AX\n\t";
+}
+$$->address=string(t);
+
 		}
 		;
 
@@ -1054,35 +1296,36 @@ s->Token="error";
 
 			}
 //code generation
-			$$=$1;
-			$$->code += $3->code;
-			$$->code += "mov ax, "+ $1->address+"\n";
-			$$->code += "mov bx, "+ $3->address +"\n";
-			char *t=newTemp();
-			declaration += string(t) + " dw ?\n";
-			if($2->name=="*"){
-				$$->code += "mul bx\n";
-				$$->code += "mov "+ string(t) + ", ax\n";
-			}
-			else if($2->name=="/"){
-				// clear dx, perform 'div bx' and mov ax to temp
-				$$->code += "MOV DX, 0\n\t";
-				$$->code += "DIV BX\n\t";
-				$$->code += "MOV "+string(t)+", ax\n\t";
-			}
-			else{
-				// clear dx, perform 'div bx' and mov dx to temp
-				$$->code += "MOV DX, 0\n\t";
-				$$->code += "DIV BX\n\t";
-				$$->code += "MOV "+string(t)+", dx\n\t";
-			}
-			$$->address=string(t);
+
 			//cout << endl << $$->code << endl;
 			//delete $3;
 }
 else {s->Token="error";}
 
 $$=s;
+$$->code = $1->code;
+$$->code += $3->code;
+$$->code += "mov ax, "+ $1->address+"\n";
+$$->code += "mov bx, "+ $3->address +"\n";
+char *t=newTemp();
+declaration += string(t) + " dw ?\n";
+if($2->name=="*"){
+	$$->code += "mul bx\n";
+	$$->code += "mov "+ string(t) + ", ax\n";
+}
+else if($2->name=="/"){
+	// clear dx, perform 'div bx' and mov ax to temp
+	$$->code += "MOV DX, 0\n\t";
+	$$->code += "DIV BX\n\t";
+	$$->code += "MOV "+string(t)+", ax\n\t";
+}
+else{
+	// clear dx, perform 'div bx' and mov dx to temp
+	$$->code += "MOV DX, 0\n\t";
+	$$->code += "DIV BX\n\t";
+	$$->code += "MOV "+string(t)+", dx\n\t";
+}
+$$->address=string(t);
 		}
      ;
 
