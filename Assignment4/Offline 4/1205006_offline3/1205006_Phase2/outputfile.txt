@@ -1,0 +1,4 @@
+type_specifier	: CHAR
+declaration_list : ID
+x
+var_declaration	: type_specifier declaration_list SEMICOLON 

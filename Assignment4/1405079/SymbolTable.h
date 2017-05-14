@@ -21,6 +21,8 @@ class SymbolInfo
 public:
 	string name;
     string type;
+		string code;
+		string address;
 	string Token;
     SymbolInfo* next;
 	int ivalue;
@@ -33,23 +35,41 @@ public:
     {
         this->name = "";
         this->type = "";
+				this->code = "";
+        this->address = "";
 		ivalue=-1e+007;
 		fvalue=-1e+007;
         this->next = NULL;
 		this->fp=NULL;
 		this-> array=NULL;
-		
+
     }
 
     SymbolInfo(string name,string type,SymbolInfo* next=NULL) {
         this->name = name;
         this->type = type;
         this->next = next;
-		ivalue=-1e+007;
-		fvalue=-1e+007;
-        this->next = NULL;
-		this->fp=NULL;
-		this-> array=NULL;
+				this->code = "";
+        this->address = "";
+				ivalue=-1e+007;
+				fvalue=-1e+007;
+		        this->next = NULL;
+				this->fp=NULL;
+				this-> array=NULL;
+    }
+
+	SymbolInfo(SymbolInfo *s)
+    {
+        this->name = s->name;
+        this->type = s->type;
+		this->code = s->code;
+        this->address = s->address;
+		this->ivalue=s->ivalue;
+		this->fvalue=s->fvalue;
+        this->next = s->next;
+		this->fp=s->fp;
+		this-> array=s-> array;
+
     }
 
     const string &getName() const {
@@ -72,6 +92,8 @@ void Print()
 {
 cout<<"<--------Symbol Info:------>\n"<<"Name : "<<name<<endl;
 cout<<"Type : "<<type<<endl;
+cout<<"Code : "<<code<<endl;
+cout<<"Address : "<<address<<endl;
 cout<<"Ivalue : "<<ivalue<<endl;
 cout<<"Fvalue : "<<fvalue<<endl;
 cout<<"ArraySize : "<<arraysize<<endl;
@@ -127,6 +149,8 @@ public:
         {
             //cout<<"Inserted in ScopeTable# "<<id<<" at position "<<pos<<"," <<0<<endl;
 			SymbolInfo *temp=new SymbolInfo(symbol.getName(),symbol.getType());
+			temp->code=symbol.code;
+			temp->address=symbol.address;
 			temp->ivalue=symbol.ivalue;
 			temp->fvalue=symbol.fvalue;
 			temp->Token=symbol.Token;
@@ -152,6 +176,8 @@ public:
             }
             //cout<<"Inserted in ScopeTable# "<<id<<" at position "<<pos<<"," <<count+1<<endl;
 			SymbolInfo *temp=new SymbolInfo(symbol.getName(),symbol.getType());
+			temp->code=symbol.code;
+			temp->address=symbol.address;
 			temp->ivalue=symbol.ivalue;
 			temp->fvalue=symbol.fvalue;
 			temp->Token=symbol.Token;
@@ -235,7 +261,7 @@ public:
                             if(symtabprint)fprintf(symtable,"%d",currSymbol->array[i]->ivalue);
                         }
                         else if(currSymbol->type=="float")
-                        {   
+                        {
                             fprintf(logout,"%f",currSymbol->array[i]->fvalue);
                             if(symtabprint)fprintf(symtable,"%f",currSymbol->array[i]->fvalue);
                         }
@@ -260,7 +286,7 @@ public:
                     fprintf(logout,", %f >",currSymbol->fvalue);
                     if(symtabprint)fprintf(symtable,", %f >",currSymbol->fvalue);
                 }
-             
+
                 currSymbol = currSymbol->next;
             }
             fprintf(logout,"\n");
@@ -300,7 +326,7 @@ public:
                 cout<<v[j].first<<" "<<v[j].second<<endl;
             }
     }
-	
+
 int hashFunction(int x)
 {
     return (3*pow(x,4)+11*pow(x,3)+19*x);
@@ -353,7 +379,7 @@ public:
             currScope=currScope->parentScope;
 	    temp->FreeSpace();
         }
-	
+
     }
     bool Insert(string name,string type)
     {

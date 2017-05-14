@@ -1,36 +1,12 @@
-Line No 7
+Line No 13
 
 ScopeTable # 2
 0 -->  < b, int , -10000000 >
-5 -->  < a, int , -10000000 >
-
-ScopeTable # 1
-0 -->  < var, function >
 1 -->  < y, int , -10000000 >
-5 -->  < a, float , -10000000.000000 >
-6 -->  < x, int , -10000000 > < z, int , -10000000 > < foo, function >
-
-Line No 12
-
-ScopeTable # 3
+5 -->  < a, int ,{ -10000000 }>
+6 -->  < z, int , -10000000 >
 
 ScopeTable # 1
-0 -->  < var, function >
-1 -->  < y, int , -3 >
-5 -->  < a, float , -10000000.000000 >
-6 -->  < x, int , 2 > < z, int , -10000000 > < foo, function >
-
-Line No 22
-
-ScopeTable # 4
-0 -->  < i, int , 6 >
-1 -->  < d, float , 7.000000 >
-5 -->  < a, int ,{ 1, 5 }>
-6 -->  < c, int , -10000000 > < j, int , 1 >
-
-ScopeTable # 1
-0 -->  < var, function >
-1 -->  < y, int , -3 > < main, function >
-5 -->  < a, float , -10000000.000000 >
-6 -->  < x, int , 2 > < z, int , -10000000 > < foo, function >
+1 -->  < main, function >
+6 -->  < x, int , -10000000 >
 
