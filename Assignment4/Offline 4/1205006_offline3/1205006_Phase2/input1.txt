@@ -1,0 +1,10 @@
+int main(){
+	char x;
+	int y, arr[10];
+	float z;
+	x= 'b';
+	y = 10;
+	z = 11.2;
+	arr[2] = 5;
+}
+

@@ -1,0 +1,184 @@
+type_specifier	: INT  
+declaration_list : ID
+a
+declaration_list : declaration_list COMMA ID
+b
+declaration_list : declaration_list COMMA ID
+c
+declaration_list : declaration_list COMMA ID
+i
+var_declaration	: type_specifier declaration_list SEMICOLON 
+variable : ID
+factor	: CONST_INT
+10
+unary_expression : factor
+term : unary_expression
+simple_expression : term
+rel_expression	: simple_expression
+logic_expression : rel_expression
+expression : variable ASSIGNOP logic_expression
+
+0->
+1-> <i, int , 0, >  ->
+2->
+3->
+4->
+5->
+6-> <a, int , 10, >  ->
+7-> <b, int , 0, >  ->
+8-> <c, int , 0, >  ->
+9->
+10->
+11->
+12->
+
+expression_statement	: expression SEMICOLON
+statement  : expression_statement
+statements : statement
+variable : ID
+factor	: CONST_INT
+20
+unary_expression : factor
+term : unary_expression
+simple_expression : term
+rel_expression	: simple_expression
+logic_expression : rel_expression
+expression : variable ASSIGNOP logic_expression
+
+0->
+1-> <i, int , 0, >  ->
+2->
+3->
+4->
+5->
+6-> <a, int , 10, >  ->
+7-> <b, int , 20, >  ->
+8-> <c, int , 0, >  ->
+9->
+10->
+11->
+12->
+
+expression_statement	: expression SEMICOLON
+statement  : expression_statement
+statements : statements statement
+variable : ID
+factor	: CONST_INT
+30
+unary_expression : factor
+term : unary_expression
+simple_expression : term
+rel_expression	: simple_expression
+logic_expression : rel_expression
+expression : variable ASSIGNOP logic_expression
+
+0->
+1-> <i, int , 0, >  ->
+2->
+3->
+4->
+5->
+6-> <a, int , 10, >  ->
+7-> <b, int , 20, >  ->
+8-> <c, int , 30, >  ->
+9->
+10->
+11->
+12->
+
+expression_statement	: expression SEMICOLON
+statement  : expression_statement
+statements : statements statement
+variable : ID
+factor	: CONST_INT
+0
+unary_expression : factor
+term : unary_expression
+simple_expression : term
+rel_expression	: simple_expression
+logic_expression : rel_expression
+expression : variable ASSIGNOP logic_expression
+
+0->
+1-> <i, int , 0, >  ->
+2->
+3->
+4->
+5->
+6-> <a, int , 10, >  ->
+7-> <b, int , 20, >  ->
+8-> <c, int , 30, >  ->
+9->
+10->
+11->
+12->
+
+expression_statement	: expression SEMICOLON
+variable : ID
+factor	: variable
+unary_expression : factor
+term : unary_expression
+simple_expression : term
+factor	: CONST_INT
+3
+unary_expression : factor
+term : unary_expression
+simple_expression : term
+rel_expression	: simple_expression RELOP simple_expression	
+logic_expression : rel_expression
+expression : logic_expression
+expression_statement	: expression SEMICOLON
+variable : ID
+variable : ID
+factor	: variable
+unary_expression : factor
+term : unary_expression
+simple_expression : term
+factor	: CONST_INT
+1
+unary_expression : factor
+term : unary_expression
+simple_expression : simple_expression ADDOP term  
+rel_expression	: simple_expression
+logic_expression : rel_expression
+expression : variable ASSIGNOP logic_expression
+
+0->
+1-> <i, int , 1, >  ->
+2->
+3->
+4->
+5->
+6-> <a, int , 10, >  ->
+7-> <b, int , 20, >  ->
+8-> <c, int , 30, >  ->
+9->
+10->
+11->
+12->
+
+variable : ID
+factor	: variable
+unary_expression : factor
+term : unary_expression
+simple_expression : term
+factor	: CONST_INT
+0
+unary_expression : factor
+term : unary_expression
+simple_expression : term
+rel_expression	: simple_expression RELOP simple_expression	
+logic_expression : rel_expression
+expression : logic_expression
+statement  : PRINTLN LPAREN ID RPAREN SEMICOLON 
+statements : statement
+compound_statement : LCURL statements RCURL 
+statement  : compound_statement
+statement  : IF LPAREN expression RPAREN statement
+statements : statement
+compound_statement : LCURL statements RCURL 
+statement  : compound_statement
+statement  : FOR LPAREN expression_statement expression_statement expression RPAREN statement
+statements : statements statement
+compound_statement : LCURL var_declaration statements RCURL
+Program : INT MAIN LPAREN RPAREN compound_statement

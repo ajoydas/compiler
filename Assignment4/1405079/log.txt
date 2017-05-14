@@ -28,7 +28,9 @@ Line 1: program : program unit
 
 Line 3: type_specifier : VOID
 
-Line 3: func_declaration : type_specifier ID LPAREN RPAREN SEMICOLON
+Line 3: parameter_list  : empty
+
+Line 3: func_declaration : type_specifier ID LPAREN parameter_list RPAREN SEMICOLON
 foo
 
 Line 3: unit : func_declaration
@@ -99,6 +101,8 @@ Line 7: unit : func_definition
 Line 7: program : program unit
 
 Line 9: type_specifier : VOID
+
+Line 9: parameter_list  : empty
 
 Line 10: variable : ID
 x
@@ -185,7 +189,7 @@ ScopeTable # 1
 5 -->  < a, float , -10000000.000000 >
 6 -->  < x, int , 2 > < z, int , -10000000 > < foo, function >
 
-Line 12: func_definition : type_specifier ID LPAREN RPAREN compound_statement
+Line 12: func_definition : type_specifier ID LPAREN parameter_list RPAREN compound_statement
 foo
 
 Line 12: unit : func_definition
@@ -193,6 +197,8 @@ Line 12: unit : func_definition
 Line 12: program : program unit
 
 Line 14: type_specifier : INT 
+
+Line 14: parameter_list  : empty
 
 Line 15: type_specifier : INT 
 
@@ -642,7 +648,7 @@ ScopeTable # 1
 5 -->  < a, float , -10000000.000000 >
 6 -->  < x, int , 2 > < z, int , -10000000 > < foo, function >
 
-Line 22: func_definition : type_specifier ID LPAREN RPAREN compound_statement
+Line 22: func_definition : type_specifier ID LPAREN parameter_list RPAREN compound_statement
 main
 
 Line 22: unit : func_definition

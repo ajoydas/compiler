@@ -1,0 +1,12 @@
+ <a, int> Inserted at position 6, 0
+ <b, int> Inserted at position 7, 0
+ <c, int> Inserted at position 8, 0
+ <i, int> Inserted at position 1, 0
+Item <a, int> Found at 6, 0
+Item <b, int> Found at 7, 0
+Item <c, int> Found at 8, 0
+Item <i, int> Found at 1, 0
+Item <i, int> Found at 1, 0
+Item <i, int> Found at 1, 0
+Item <i, int> Found at 1, 0
+Item <i, int> Found at 1, 0

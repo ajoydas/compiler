@@ -131,6 +131,54 @@ if(flag){
 		
 }
 params.clear();
+ } 
+
+
+| type_specifier ID LPAREN RPAREN SEMICOLON
+	{
+
+		fprintf(logout,"Line %d: func_declaration : type_specifier ID LPAREN RPAREN SEMICOLON\n",line_count);
+fprintf(logout,"%s\n\n",$2->getName().c_str());
+		//cout<<"func_declaration :$1= "<<$1->getName()<<endl;
+		//functype=$1->getName();
+if(paramerr==true)
+{
+yyerror("Parameters can't be declared without name in function"+$2->getName());
+paramerr=false;
+}
+else {
+		if(table->Lookup($2->getName())==NULL)
+		{
+bool flag=true;
+for(int i=0;i<params.size();i++)
+{
+if(params[i].name==$2->getName()){
+flag=false;
+ostringstream oss;
+oss<<"Function name matched with "<<i+1<<"th parameter in "<<$2->getName();
+yyerror(oss.str());	
+break;
+}
+}
+if(flag){
+
+			table->Insert($2->getName(),"function");
+			SymbolInfo *s=table->Lookup($2->getName());
+			s->fp=new Function();
+			s->fp->retype= $1->getName();
+			s->fp->params=params;
+			s->Print(); 
+		}
+} 
+		else
+		{
+			//fprintf(logout,"Error at Line %d: Multiple declaration Function %s\n\n",line_count,$2->getName().c_str());
+			yyerror("Multiple declaration Function "+$2->getName());
+		}
+		fn=NULL;
+		
+}
+params.clear();
  }
 		 	;
 		 
@@ -212,6 +260,87 @@ yyerror("Return-type Mismatch of Function "+$2->getName());
 		fprintf(logout,"Line %d: func_definition : type_specifier ID LPAREN parameter_list RPAREN compound_statement\n",line_count);
 fprintf(logout,"%s\n\n",$2->getName().c_str());
 }
+
+
+
+| type_specifier ID LPAREN RPAREN 
+	{
+if(paramerr==true)
+{
+yyerror("Parameters can't be declared without name in function "+$2->getName());
+paramerr=false;
+}
+else {
+//cout<<"func_definition: $1= "<<$1->getName()<<endl;
+//functype=$1->getName();
+		cout<<"func_definition:\n";
+		SymbolInfo *si=table->Lookup($2->getName());
+		if(si==NULL)
+		{
+bool flag=true;
+for(int i=0;i<params.size();i++)
+{
+if(params[i].name==$2->getName()){
+flag=false;
+ostringstream oss;
+oss<<"Function name matched with "<<i+1<<"th parameter in "<<$2->getName();
+yyerror(oss.str());	
+break;
+}
+}
+if(flag){
+
+			table->Insert($2->getName(),"function");
+			SymbolInfo *s=table->Lookup($2->getName());
+			s->fp=new Function();
+			s->fp->retype= $1->getName();
+			s->fp->params=params;
+			fn=s->fp;
+			s->Print();
+}
+		}
+		else
+		{
+			fn=si->fp;
+			//fprintf(error,"Line %d: Multiple declaration Function %s\n\n",line_count,$2->getName().c_str());
+			if(si->fp->retype==$1->getName())
+			{
+				if(si->fp->params.size()!=params.size()){
+//fprintf(logout,"Error at Line %d: Parameters Size Mismatch of Function %s\n\n",line_count,$2->getName().c_str());	
+yyerror("Parameters Size Mismatch of Function "+$2->getName());
+}
+				else{
+					for(int i=0;i<si->fp->params.size();i++)
+					{
+						if(si->fp->params[i].getName()!=params[i].getName()||si->fp->params[i].getType()!=params[i].getType())
+						{
+							//fprintf(logout,"Error at Line %d: %dth parameter Mismatch of Function %s\n\n",line_count,i+1,$2->getName().c_str());
+ostringstream oss;
+oss<<i+1<<"th parameter Mismatch of Function "<<$2->getName();
+yyerror(oss.str());					
+						}
+if(params[i].name==$2->getName()){
+ostringstream oss;
+oss<<"Function name matched with "<<i+1<<"th parameter in "<<$2->getName();
+yyerror(oss.str());	
+break;
+}
+					}
+				}
+			}
+			else{
+				fprintf(logout,"Line %d: Return-type Mismatch of Function %s\n\n",line_count,$2->getName().c_str());
+yyerror("Return-type Mismatch of Function "+$2->getName());
+			}
+		}
+}
+		//cout<<"Rparen end\n";
+		params.clear();
+
+} compound_statement {
+		fprintf(logout,"Line %d: func_definition : type_specifier ID LPAREN RPAREN compound_statement\n",line_count);
+fprintf(logout,"%s\n\n",$2->getName().c_str());
+}
  		 	;
  		 
 parameter_list  : parameter_list COMMA type_specifier ID
@@ -241,10 +370,6 @@ parameter_list  : parameter_list COMMA type_specifier ID
  	fprintf(logout,"Line %d: parameter_list  : type_specifier\n\n",line_count);
 	paramerr=true;
 }  
-	|   
-{
- 	fprintf(logout,"Line %d: parameter_list  : empty\n\n",line_count);
-}
  		;
 
 

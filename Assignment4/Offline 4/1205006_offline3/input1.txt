@@ -1,0 +1,11 @@
+int main(){
+	int a, b, c, i;
+	a = 10;
+	b = 20;
+	c = 30;
+	for(i = 0; i<3 ; i = i+1){
+		if(i == 0){
+			println(a);
+		}
+	}
+}
