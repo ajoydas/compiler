@@ -13,6 +13,7 @@ class Function
 {
 public:
 	string retype;
+	string retaddress;
 	vector<SymbolInfo> params;
 };
 

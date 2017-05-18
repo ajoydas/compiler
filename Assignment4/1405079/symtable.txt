@@ -1,12 +1,20 @@
-Line No 13
+Line No 7
 
 ScopeTable # 2
-0 -->  < b, int , -10000000 >
+5 -->  < a, int , -10000000 >
+
+ScopeTable # 1
+5 -->  < f, function >
+6 -->  < x, int , -10000000 >
+
+Line No 13
+
+ScopeTable # 3
 1 -->  < y, int , -10000000 >
-5 -->  < a, int ,{ -10000000 }>
-6 -->  < z, int , -10000000 >
+6 -->  < x, int , -10000000 >
 
 ScopeTable # 1
 1 -->  < main, function >
+5 -->  < f, function >
 6 -->  < x, int , -10000000 >
 

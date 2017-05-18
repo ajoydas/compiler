@@ -1,13 +1,13 @@
 int x;
-
+int f(int a)
+{
+	println(a);
+	a=f(9);
+	return a;
+}
 int main(){
-	int y;
-	y=10;
-	int z;
-	z=y;
-	int a[1];
-	a[0]=4;
-	int b;
-	b=a[0];
-	return 0;
+	int x,y;
+	x=10;
+	y=f(x);
+	println(y);
 }

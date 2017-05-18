@@ -22,6 +22,7 @@ extern int line_count;
 string type;
 string functype;
 Function *fn=NULL;
+Function *fn2=NULL;
 vector<SymbolInfo> params,args;
 bool paramerr=false;
 
@@ -36,7 +37,8 @@ string declaration = "";
 
 int labelCount=0;
 int tempCount=0;
-
+string funcName="";
+int funcId=0;
 char *newLabel()
 {
 	char *lb= new char[4];
@@ -85,12 +87,11 @@ start : program
 		fprintf(logout,"Total Lines: %d\n\nTotal Errors: %d\n\n",line_count,errorcount);
 
 		$$ = new SymbolInfo();
-		asmb += ".model small\n.stack 100h\n.data\n"+ declaration +"\n"+".code\nPRINTLN PROC\n@END_IF1:\nXOR CX,CX\nMOV BX,10D\n@REPEAT1:\nXOR DX,DX\nDIV BX\nPUSH DX\nINC CX\nOR AX,AX\nJNE @REPEAT1\nMOV AH,2\n@PRINT_LOOP:\nPOP DX\nOR DL,30H\nINT 21H\nLOOP @PRINT_LOOP\nRET\nPRINTLN ENDP\n";
-		asmb += "\nmain proc\n\tmov ax,@data\n\tmov ds,ax\n\tmov es,ax";
+		asmb += ".model small\n.stack 100h\n.data\n"+ declaration +"\n"+".code\nPRINTLN PROC\n@END_IF1:\nXOR CX,CX\nMOV BX,10D\n@REPEAT1:\nXOR DX,DX\nDIV BX\nPUSH DX\nINC CX\nOR AX,AX\nJNE @REPEAT1\nMOV AH,2\n@PRINT_LOOP:\nPOP DX\nOR DL,30H\nINT 21H\nLOOP @PRINT_LOOP\nMOV DL,0DH\nINT 21H\nMOV DL,0AH\nINT 21H\nRET\nPRINTLN ENDP\n\n";
 		$$->code += asmb + $1->code;
 		//cout<<$5->code;
 
-		$$->code += "\n\tint 21h\n\tmov ah,4ch\n\tint 21h\nmain endp\nend main\n";
+		$$->code += "end main\n";
 		fprintf(codes,"%s\n",$$->code.c_str());
 	}
 	;
@@ -106,11 +107,14 @@ program : program unit
 	{
 		fprintf(logout,"Line %d: program : unit\n\n",line_count);
 		$$=$1;
+
+		/*
+		| error unit {
+			fprintf(logout,"Line %d: unit : error unit\n\n",line_count);
+			$$=$2;
+		}
+		*/
 	}
-| error unit {
-	fprintf(logout,"Line %d: unit : error unit\n\n",line_count);
-	$$=$2;
-}
 	;
 
 unit :var_declaration
@@ -123,7 +127,7 @@ unit :var_declaration
      	{
 /**/
 			fprintf(logout,"Line %d: unit : func_declaration\n\n",line_count);
-$$=$1;
+			$$=$1;
      	}
      	|
      	func_definition
@@ -267,12 +271,16 @@ if(flag){
 			s->fp->retype= $1->getName();
 			s->fp->params=params;
 			fn=s->fp;
+			fn2=s->fp;
+			funcName=$2->getName();
 			s->Print();
 }
 		}
 		else
 		{
 			fn=si->fp;
+			fn2=si->fp;
+			funcName=si->getName();
 			//fprintf(error,"Line %d: Multiple declaration Function %s\n\n",line_count,$2->getName().c_str());
 			if(si->fp->retype==$1->getName())
 			{
@@ -311,6 +319,39 @@ yyerror("Return-type Mismatch of Function "+$2->getName());
 } compound_statement {
 		fprintf(logout,"Line %d: func_definition : type_specifier ID LPAREN parameter_list RPAREN compound_statement\n",line_count);
 fprintf(logout,"%s\n\n",$2->getName().c_str());
+cout<<"Line %d: func_definition : type_specifier ID LPAREN parameter_list RPAREN compound_statement\n";
+	$$=new SymbolInfo();
+	$$->code=funcName+" proc\n";
+	//cout<<"####1"<<endl;
+	if(funcName=="main")
+	{
+		//cout<<"####2"<<endl;
+		$$->code+= "mov ax,@data\nmov ds,ax\nmov es,ax\n";
+		$$->code+=$7->code;
+		//cout<<"####3"<<endl;
+
+	}
+	else
+	{
+		$$->code+="push BP\nmov BP,SP\npush ax\npush bx\npush cx\npush dx\n";
+		for(int i=fn2->params.size()-1;i>=0;i--)
+		{
+			ostringstream oss;
+			oss<<"mov ax,[BP+"<<4+(fn2->params.size()-1-i)*2<<"]\n";
+			$$->code+=oss.str();
+
+			string st=newAdd(fn2->params[i].getName(),funcId);
+			declaration +=st+ " dw ?\n";
+			$$->code+="mov "+st+",ax\n";
+		}
+		$$->code+=$7->code;
+		$$->code+="pop dx\npop cx\npop bx\npop ax\npop BP\n";
+		ostringstream oss;
+		oss<<"Ret "<<fn2->params.size()*2<<"\n";
+		$$->code+=oss.str();
+	}
+	if(funcName=="main")$$->code+="mov ah,4ch\nint 21h\n";
+	$$->code+=funcName+" endp\n\n";
 }
 
 
@@ -348,12 +389,16 @@ if(flag){
 			s->fp->retype= $1->getName();
 			s->fp->params=params;
 			fn=s->fp;
+			fn2=s->fp;
+			funcName=$2->getName();
 			s->Print();
 }
 		}
 		else
 		{
 			fn=si->fp;
+			fn2=si->fp;
+			funcName=si->getName();
 			//fprintf(error,"Line %d: Multiple declaration Function %s\n\n",line_count,$2->getName().c_str());
 			if(si->fp->retype==$1->getName())
 			{
@@ -391,7 +436,34 @@ yyerror("Return-type Mismatch of Function "+$2->getName());
 
 } compound_statement {
 		fprintf(logout,"Line %d: func_definition : type_specifier ID LPAREN RPAREN compound_statement\n",line_count);
-fprintf(logout,"%s\n\n",$2->getName().c_str());
+		fprintf(logout,"%s\n\n",$2->getName().c_str());
+		$$=new SymbolInfo();
+		$$->code=funcName+" proc\n";
+		//cout<<"####1"<<endl;
+		if(funcName=="main")
+		{
+			//cout<<"####2"<<endl;
+			$$->code+= "mov ax,@data\nmov ds,ax\nmov es,ax\n";
+			$$->code+=$6->code;
+		}
+		else
+		{
+			$$->code+="push BP\nmov BP,SP\npush ax\npush bx\npush cx\npush dx\n";
+			for(int i=fn2->params.size()-1;i>=0;i--)
+			{
+				ostringstream oss;
+				oss<<"mov ax,[BP+"<<4+(fn2->params.size()-1-i)*2<<"]\n";
+				$$->code+=oss.str();
+
+				string st=newAdd(fn2->params[i].getName(),funcId);
+				declaration +=st+ " dw ?\n";
+				$$->code+="mov "+st+",ax\n";
+			}
+			$$->code+=$6->code;
+			$$->code+="RET 2\n";
+		}
+		if(funcName=="main")$$->code+="mov ah,4ch\nint 21h\n";
+		$$->code+=funcName+" endp\n";
 }
  		 	;
 
@@ -436,16 +508,23 @@ compound_statement :LCURL
 				//cout<<fn->params[i].getName()<<endl;
 				table->Insert(fn->params[i].getName(),fn->params[i].getType());
 			}
+			funcId=table->id;
 			fn=NULL;
 		}
 	}
 statements RCURL {
-		 fprintf(logout,"Line %d: compound_statement : LCURL statements RCURL\n\n",line_count);
-		 symtabprint=true;
-		 fprintf(symtable,"Line No %d\n\n",line_count);
-		 table->PrintAllScopeTable();
-		 symtabprint=false;
-		 table->ExitScope();
+
+		$$=$3;
+		cout<<"Line %d: compound_statement : LCURL statements RCURL\n\n";
+		cout<<"####1"<<$$->code<<endl;
+
+		fprintf(logout,"Line %d: compound_statement : LCURL statements RCURL\n\n",line_count);
+		symtabprint=true;
+		fprintf(symtable,"Line No %d\n\n",line_count);
+		table->PrintAllScopeTable();
+		symtabprint=false;
+		table->ExitScope();
+
 	}
 	| LCURL
 	{
@@ -465,12 +544,15 @@ statements RCURL {
 		 fprintf(logout,"Line %d: compound_statement : LCURL RCURL\n\n",line_count);
 		 table->PrintAllScopeTable();
 		 table->ExitScope();
+		 $$=$2;
 	}
 		   ;
 
 var_declaration	: type_specifier declaration_list SEMICOLON {
 	 fprintf(logout,"Line %d: var_declaration	: type_specifier declaration_list SEMICOLON\n\n",line_count);
 	 $$=$2;
+	 cout<<"Line %d: var_declaration	: type_specifier declaration_list SEMICOLON\n\n";
+	 cout<<"#####1"<<$2->address<<endl;
  }
 
 type_specifier	: INT  { fprintf(logout,"Line %d: type_specifier : INT \n\n",line_count); type="int"; $$=new SymbolInfo("int",type); }
@@ -553,10 +635,11 @@ temp->Token="error";
 					else
 					{
 						temp->address=newAdd($3->name,table->id);
-						declaration += temp->address+ " dw ?\n";
+						declaration += temp->address+ " dw ?";
 						for(int i =0; i<$5->ivalue; i++){
 							declaration += ", ?";
 						}
+						declaration +="\n";
 					}
 
 				}
@@ -576,10 +659,11 @@ temp->Token="error";
 					else
 					{
 						temp->address=newAdd($3->name,table->id);
-						declaration += temp->address+ " dw ?\n";
+						declaration += temp->address+ " dw ?";
 						for(int i =0; i<$5->ivalue; i++){
 							declaration += ", ?";
 						}
+						declaration +="\n";
 					}
 				}
 				if(type == "void"){
@@ -596,6 +680,8 @@ $$=temp;
 		 | ID  {
 				fprintf(logout,"Line %d: declaration_list : ID\n",line_count);
 				fprintf(logout,"%s\n\n",$1->getName().c_str());
+				cout<<"Line %d: declaration_list : ID\n";
+
 SymbolInfo* temp = new SymbolInfo();
 
 				if(type == "int"){
@@ -607,8 +693,11 @@ temp->Token="error";
 					}
 					else
 					{
+						cout<<"###1"<<endl;
 						temp->address=newAdd($1->name,table->id);
+						cout<<"###2"<<endl;
 						declaration += temp->address+ " dw ?\n";
+						cout<<"###3"<<temp->address<<endl;
 					}
 				}
 				if(type == "float"){
@@ -630,6 +719,7 @@ temp->Token="error";
 				}
 
 $$=temp;
+cout<<"Code: "<<temp->code<<endl;
 			}
 		 | ID LTHIRD CONST_INT RTHIRD  {
 				fprintf(logout,"Line %d: declaration_list : ID LTHIRD CONST_INT RTHIRD\n",line_count);
@@ -645,7 +735,7 @@ s->array=new SymbolInfo*[s->arraysize];
 for(int i=0;i<s->arraysize;i++)
 {
 cout<<"Creating pos = "<<i<<endl;
-s->array[i]=new SymbolInfo("element","int");
+s->array[i]=new SymbolInfo(s->name,"int");
 }
 					if(table->Insert(s) == 0){
 						yyerror("Multple declaration! ");
@@ -654,10 +744,11 @@ temp->Token="error";
 					else
 					{
 						temp->address=newAdd($1->name,table->id);
-						declaration += temp->address+ " dw ?\n";
+						declaration += temp->address+ " dw ?";
 						for(int i =0; i<$3->ivalue; i++){
 							declaration += ", ?";
 						}
+						declaration +="\n";
 					}
 				}
 				if(type == "float"){
@@ -676,10 +767,11 @@ temp->Token="error";
 					else
 					{
 						temp->address=newAdd($1->name,table->id);
-						declaration += temp->address+ " dw ?\n";
+						declaration += temp->address+ " dw ?";
 						for(int i =0; i<$3->ivalue; i++){
 							declaration += ", ?";
 						}
+						declaration +="\n";
 					}
 				}
 				if(type == "void"){
@@ -693,18 +785,24 @@ $$=temp;
 
 statements : statement  {
 	fprintf(logout,"Line %d: statements : statement\n\n",line_count);
+	cout<<"Line %d: statements : statement\n\n";
 	$$=$1;
+	cout<<"####1"<<$1->address<<endl;
  }
 	   | statements statement  {
 		   fprintf(logout,"Line %d: statements : statements statement\n\n",line_count);
+		   cout<<"Line %d: statements : statements statement\n\n";
 		   $$=$1;
+		   cout<<"####1\n\n";
 		   $$->code += $2->code;
+		   cout<<"####2\n\n"<<$$->code;
 	   }
 	   ;
 
 
 statement  : var_declaration {
 fprintf(logout,"Line %d: statement  : var_declaration\n\n",line_count);
+$$=$1;
 }
 	   | expression_statement  {
 		   fprintf(logout,"Line %d: statement : expression_statement\n\n",line_count);
@@ -782,13 +880,15 @@ fprintf(logout,"Line %d: statement  : var_declaration\n\n",line_count);
 	   | RETURN expression SEMICOLON  {
 		   fprintf(logout,"Line %d: statement : RETURN expression SEMICOLON \n\n",line_count);
 		   // write code for return.
-		   $$=$1;
+		   $$=$2;
+		   fn2->retaddress=$2->address;
+		   cout<<"return ret: "<<$$->address<<endl;
 	   }
 
 	   | error SEMICOLON {
 		   $$=new SymbolInfo();
 	   	$$->name = ";";
-	   	$$->Token = "SEMICOLON";
+	   	$$->Token = "error";
 	   	$$->code="";
 	   }
 ;
@@ -802,8 +902,9 @@ expression_statement	: SEMICOLON		 {
 }
 			| expression SEMICOLON  {
 				fprintf(logout,"Line %d: expression_statement	: expression SEMICOLON\n\n",line_count);
-				cout<<"Variable : "<<$1->name<<" "<<$1->ivalue<<endl;
+				cout<<"Line %d: expression_statement: expression SEMICOLON\n\n";
  			 	$$=$1;
+				cout<<$$->code;
 			 }
 			;
 
@@ -829,6 +930,7 @@ else
 
 			temp->address=newAdd(temp->name,table->id);
 			$$ = temp;
+			cout<<"return Id : "<<$$->address<<endl;
 		}
 		| ID LTHIRD expression RTHIRD  {
 			fprintf(logout,"Line %d: variable : ID LTHIRD expression RTHIRD\n",line_count);
@@ -864,10 +966,12 @@ temp = new SymbolInfo();
 temp->Token="error";
 				}
 				else {
+					int size=temp->arraysize;
 					temp = temp->array[$3->ivalue];
 					temp=new SymbolInfo(temp);
 					temp->code=$3->code+"mov bx, " +$3->address +"\nadd bx, bx\n";
 					temp->address=newAdd(temp->name,table->id);
+					temp->arraysize=size;
 					//fprintf(logout,"Array index insert: %d\n\n",$$->ivalue);
 				}
 
@@ -884,6 +988,7 @@ $$=temp;
 expression : logic_expression {
 			fprintf(logout,"Line %d: expression : logic_expression\n\n",line_count);
 			$$ = $1;
+			cout<<"return le: "<<$$->address<<endl;
 		}
 	    | variable ASSINOP logic_expression 	 {
 			fprintf(logout,"Line %d: expression : variable ASSINOP logic_expression\n\n",line_count);
@@ -948,7 +1053,7 @@ $$=temp;
 
 	$$->code=$3->code+$1->code;
 	$$->code+="mov ax, "+$3->address+"\n";
-	if($$->arraysize==-1){
+	if($1->arraysize==-1){
 		$$->code+= "mov "+$1->address+", ax\n";
 	}
 
@@ -962,6 +1067,7 @@ $$=temp;
 logic_expression : rel_expression 	 {
 			fprintf(logout,"Line %d: logic_expression : rel_expression\n\n",line_count);
 			$$ = $1;
+			cout<<"return re: "<<$$->address<<endl;
 		}
 		| rel_expression LOGICOP rel_expression 	 {
 			fprintf(logout,"Line %d: logic_expression : rel_expression\n\n",line_count);
@@ -1218,6 +1324,7 @@ $$->address=string(t);
 term :	unary_expression {
 			fprintf(logout,"Line %d: term : unary_expression\n\n",line_count);
 			$$ = $1;
+			cout<<"return ue: "<<$1->address<<endl;
 		}
      |  term MULOP unary_expression {
 			fprintf(logout,"Line %d: term : term MULOP unary_expression\n\n",line_count);
@@ -1409,6 +1516,7 @@ factor	: variable  {
 				$$->code+= "mov " + string(t) + ", ax\n";
 				$$->address=string(t);
 			}
+			cout<<"return var: "<<$$->address<<endl;
 		}
 	| ID LPAREN argument_list RPAREN {
 
@@ -1435,6 +1543,7 @@ si = new SymbolInfo();
 si->Token="error";
 }
 else{
+	si->code=$3->code;
 	for(int i=0;i<s->fp->params.size();i++)
 	{
 		if(s->fp->params[i].getType()!=args[i].getType())
@@ -1446,7 +1555,11 @@ yyerror(oss.str());
 si = new SymbolInfo();
 si->Token="error";
 		}
+		si->code+="push "+args[i].address+"\n";
+
 	}
+si->code+="call "+$1->name+"\n";
+if(s->fp->retaddress!="")si->address=s->fp->retaddress;
 
 si->name=$1->name;
 si->type=s->fp->retype;
@@ -1474,11 +1587,23 @@ args.clear();
 			fprintf(logout,"Line %d: factor : CONST_INT\n",line_count);
 			fprintf(logout,"%d\n\n",$1->ivalue);
 			$$ = $1;
+			char *t= newTemp();
+			declaration += string(t) + " dw ?\n";
+			ostringstream oss;
+			oss<<"mov " + string(t) + ","<<$1->ivalue<<endl;
+			$$->code+=oss.str();
+			$$->address=string(t);
 		}
 	| CONST_FLOAT {
 			fprintf(logout,"Line %d: factor : CONST_FLOAT\n",line_count);
 			fprintf(logout,"%lf\n\n",$1->fvalue);
 			$$ = $1;
+			char *t= newTemp();
+			declaration += string(t) + " dw ?\n";
+			ostringstream oss;
+			oss<<"mov " + string(t) + ","<<(int)$1->fvalue<<endl;
+			$$->code+=oss.str();
+			$$->address=string(t);
 		}
 	| variable INCOP  {
 if($1->Token!="error")
@@ -1531,6 +1656,8 @@ $$= new SymbolInfo();
 }
 else if($1->Token=="error")$$=$1;
 else $$=$3;
+
+$$->code=$1->code+$3->code;
 }
 	      | logic_expression
 {
