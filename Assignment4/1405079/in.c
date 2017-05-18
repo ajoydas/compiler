@@ -1,13 +1,10 @@
 int x;
-int f(int a)
+int f(int a,int b)
 {
-	println(a);
-	a=f(9);
-	return a;
+	return a+b;
 }
 int main(){
-	int x,y;
-	x=10;
+	int x,y,z;
 	y=f(x);
 	println(y);
 }

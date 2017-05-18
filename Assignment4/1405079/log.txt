@@ -16,217 +16,146 @@ Line 2: type_specifier : INT
 Line 2: parameter_list  : type_specifier ID
 a
 
-Line 4: statement : PRINTLN LPAREN ID RPAREN SEMICOLON
+Line 2: type_specifier : INT 
+
+Line 2: parameter_list  : parameter_list COMMA type_specifier ID
+b
+
+Line 4: variable : ID
+a
+
+Line 4: factor : variable
+
+Line 4: unary_expression : factor
+
+Line 4: term : unary_expression
+
+Line 4: simple_expression : term
+
+Line 4: variable : ID
+b
+
+Line 4: factor : variable
+
+Line 4: unary_expression : factor
+
+Line 4: term : unary_expression
+
+Line 4: simple_expression : simple_expression ADDOP term
+
+Line 4: rel_expression : simple_expression
+
+Line 4: logic_expression : rel_expression
+
+Line 4: expression : logic_expression
+
+Line 4: statement : RETURN expression SEMICOLON 
 
 Line 4: statements : statement
 
-Line 5: variable : ID
-a
-
-Line 5: factor : CONST_INT
-9
-
-Line 5: unary_expression : factor
-
-Line 5: term : unary_expression
-
-Line 5: simple_expression : term
-
-Line 5: rel_expression : simple_expression
-
-Line 5: logic_expression : rel_expression
-
-Line 5: argument_list : logic_expression
-
-Line 5: argument_list : argumets
-
-Line 5: factor : ID LPAREN argument_list RPAREN
-
-Line 5: unary_expression : factor
-
-Line 5: term : unary_expression
-
-Line 5: simple_expression : term
-
-Line 5: rel_expression : simple_expression
-
-Line 5: logic_expression : rel_expression
-
-Line 5: expression : variable ASSINOP logic_expression
+Line 5: compound_statement : LCURL statements RCURL
 
 ScopeTable # 2
+0 -->  < b, int , -10000000 >
 5 -->  < a, int , -10000000 >
 
 ScopeTable # 1
 5 -->  < f, function >
 6 -->  < x, int , -10000000 >
 
-Line 5: expression_statement	: expression SEMICOLON
-
-Line 5: statement : expression_statement
-
-Line 5: statements : statements statement
-
-Line 6: variable : ID
-a
-
-Line 6: factor : variable
-
-Line 6: unary_expression : factor
-
-Line 6: term : unary_expression
-
-Line 6: simple_expression : term
-
-Line 6: rel_expression : simple_expression
-
-Line 6: logic_expression : rel_expression
-
-Line 6: expression : logic_expression
-
-Line 6: statement : RETURN expression SEMICOLON 
-
-Line 6: statements : statements statement
-
-Line 7: compound_statement : LCURL statements RCURL
-
-ScopeTable # 2
-5 -->  < a, int , -10000000 >
-
-ScopeTable # 1
-5 -->  < f, function >
-6 -->  < x, int , -10000000 >
-
-Line 7: func_definition : type_specifier ID LPAREN parameter_list RPAREN compound_statement
+Line 5: func_definition : type_specifier ID LPAREN parameter_list RPAREN compound_statement
 f
 
-Line 7: unit : func_definition
+Line 5: unit : func_definition
 
-Line 7: program : program unit
+Line 5: program : program unit
 
-Line 8: type_specifier : INT 
+Line 6: type_specifier : INT 
 
-Line 9: type_specifier : INT 
+Line 7: type_specifier : INT 
 
-Line 9: declaration_list : ID
+Line 7: declaration_list : ID
 x
 
-Line 9: declaration_list : declaration_list COMMA ID
+Line 7: declaration_list : declaration_list COMMA ID
 y
 
-Line 9: var_declaration	: type_specifier declaration_list SEMICOLON
+Line 7: declaration_list : declaration_list COMMA ID
+z
 
-Line 9: statement  : var_declaration
+Line 7: var_declaration	: type_specifier declaration_list SEMICOLON
 
-Line 9: statements : statement
+Line 7: statement  : var_declaration
 
-Line 10: variable : ID
-x
+Line 7: statements : statement
 
-Line 10: factor : CONST_INT
-10
-
-Line 10: unary_expression : factor
-
-Line 10: term : unary_expression
-
-Line 10: simple_expression : term
-
-Line 10: rel_expression : simple_expression
-
-Line 10: logic_expression : rel_expression
-
-Line 10: expression : variable ASSINOP logic_expression
-
-ScopeTable # 3
-1 -->  < y, int , -10000000 >
-6 -->  < x, int , -10000000 >
-
-ScopeTable # 1
-1 -->  < main, function >
-5 -->  < f, function >
-6 -->  < x, int , -10000000 >
-
-Line 10: expression_statement	: expression SEMICOLON
-
-Line 10: statement : expression_statement
-
-Line 10: statements : statements statement
-
-Line 11: variable : ID
+Line 8: variable : ID
 y
 
-Line 11: variable : ID
+Line 8: variable : ID
 x
 
-Line 11: factor : variable
+Line 8: factor : variable
 
-Line 11: unary_expression : factor
+Line 8: unary_expression : factor
 
-Line 11: term : unary_expression
+Line 8: term : unary_expression
 
-Line 11: simple_expression : term
+Line 8: simple_expression : term
 
-Line 11: rel_expression : simple_expression
+Line 8: rel_expression : simple_expression
 
-Line 11: logic_expression : rel_expression
+Line 8: logic_expression : rel_expression
 
-Line 11: argument_list : logic_expression
+Line 8: argument_list : logic_expression
 
-Line 11: argument_list : argumets
+Line 8: argument_list : argumets
 
-Line 11: factor : ID LPAREN argument_list RPAREN
+Line 8: factor : ID LPAREN argument_list RPAREN
 
-Line 11: unary_expression : factor
+Error at Line 8: Total Number of Arguments mismatch in funtion f 
 
-Line 11: term : unary_expression
+Line 8: unary_expression : factor
 
-Line 11: simple_expression : term
+Line 8: term : unary_expression
 
-Line 11: rel_expression : simple_expression
+Line 8: simple_expression : term
 
-Line 11: logic_expression : rel_expression
+Line 8: rel_expression : simple_expression
 
-Line 11: expression : variable ASSINOP logic_expression
+Line 8: logic_expression : rel_expression
+
+Line 8: expression : variable ASSINOP logic_expression
+
+Line 8: expression_statement	: expression SEMICOLON
+
+Line 8: statement : expression_statement
+
+Line 8: statements : statements statement
+
+Line 9: statement : PRINTLN LPAREN ID RPAREN SEMICOLON
+
+Line 9: statements : statements statement
+
+Line 10: compound_statement : LCURL statements RCURL
 
 ScopeTable # 3
 1 -->  < y, int , -10000000 >
-6 -->  < x, int , -10000000 >
+6 -->  < x, int , -10000000 > < z, int , -10000000 >
 
 ScopeTable # 1
 1 -->  < main, function >
 5 -->  < f, function >
 6 -->  < x, int , -10000000 >
 
-Line 11: expression_statement	: expression SEMICOLON
-
-Line 11: statement : expression_statement
-
-Line 11: statements : statements statement
-
-Line 12: statement : PRINTLN LPAREN ID RPAREN SEMICOLON
-
-Line 12: statements : statements statement
-
-Line 13: compound_statement : LCURL statements RCURL
-
-ScopeTable # 3
-1 -->  < y, int , -10000000 >
-6 -->  < x, int , -10000000 >
-
-ScopeTable # 1
-1 -->  < main, function >
-5 -->  < f, function >
-6 -->  < x, int , -10000000 >
-
-Line 13: func_definition : type_specifier ID LPAREN RPAREN compound_statement
+Line 10: func_definition : type_specifier ID LPAREN RPAREN compound_statement
 main
 
-Line 13: unit : func_definition
+Line 10: unit : func_definition
 
-Line 13: program : program unit
+Line 10: program : program unit
 
-Total Lines: 14
+Total Lines: 11
 
-Total Errors: 0
+Total Errors: 1
 

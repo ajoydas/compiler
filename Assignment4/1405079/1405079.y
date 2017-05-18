@@ -92,7 +92,7 @@ start : program
 		//cout<<$5->code;
 
 		$$->code += "end main\n";
-		fprintf(codes,"%s\n",$$->code.c_str());
+		if(!errorcount)fprintf(codes,"%s\n",$$->code.c_str());
 	}
 	;
 
@@ -269,6 +269,8 @@ if(flag){
 			SymbolInfo *s=table->Lookup($2->getName());
 			s->fp=new Function();
 			s->fp->retype= $1->getName();
+			s->fp->retaddress=(string)newTemp();
+			declaration +=s->fp->retaddress+ " dw ?\n";
 			s->fp->params=params;
 			fn=s->fp;
 			fn2=s->fp;
@@ -328,23 +330,28 @@ cout<<"Line %d: func_definition : type_specifier ID LPAREN parameter_list RPAREN
 		//cout<<"####2"<<endl;
 		$$->code+= "mov ax,@data\nmov ds,ax\nmov es,ax\n";
 		$$->code+=$7->code;
-		//cout<<"####3"<<endl;
-
 	}
 	else
 	{
 		$$->code+="push BP\nmov BP,SP\npush ax\npush bx\npush cx\npush dx\n";
+		string popParam="";
 		for(int i=fn2->params.size()-1;i>=0;i--)
 		{
 			ostringstream oss;
+			string st=newAdd(fn2->params[i].getName(),funcId);
+			oss<<"push "+st+"\n";
 			oss<<"mov ax,[BP+"<<4+(fn2->params.size()-1-i)*2<<"]\n";
 			$$->code+=oss.str();
 
-			string st=newAdd(fn2->params[i].getName(),funcId);
 			declaration +=st+ " dw ?\n";
 			$$->code+="mov "+st+",ax\n";
 		}
 		$$->code+=$7->code;
+		for(int i=0;i<fn2->params.size();i++)
+		{
+			string st=newAdd(fn2->params[i].getName(),funcId);
+			$$->code+="pop "+st+"\n";
+		}
 		$$->code+="pop dx\npop cx\npop bx\npop ax\npop BP\n";
 		ostringstream oss;
 		oss<<"Ret "<<fn2->params.size()*2<<"\n";
@@ -387,6 +394,8 @@ if(flag){
 			SymbolInfo *s=table->Lookup($2->getName());
 			s->fp=new Function();
 			s->fp->retype= $1->getName();
+			s->fp->retaddress=(string)newTemp();
+			declaration +=s->fp->retaddress+ " dw ?\n";
 			s->fp->params=params;
 			fn=s->fp;
 			fn2=s->fp;
@@ -449,21 +458,31 @@ yyerror("Return-type Mismatch of Function "+$2->getName());
 		else
 		{
 			$$->code+="push BP\nmov BP,SP\npush ax\npush bx\npush cx\npush dx\n";
+			string popParam="";
 			for(int i=fn2->params.size()-1;i>=0;i--)
 			{
 				ostringstream oss;
+				string st=newAdd(fn2->params[i].getName(),funcId);
+				oss<<"push "+st+"\n";
 				oss<<"mov ax,[BP+"<<4+(fn2->params.size()-1-i)*2<<"]\n";
 				$$->code+=oss.str();
 
-				string st=newAdd(fn2->params[i].getName(),funcId);
 				declaration +=st+ " dw ?\n";
 				$$->code+="mov "+st+",ax\n";
 			}
 			$$->code+=$6->code;
-			$$->code+="RET 2\n";
+			for(int i=0;i<fn2->params.size();i++)
+			{
+				string st=newAdd(fn2->params[i].getName(),funcId);
+				$$->code+="pop "+st+"\n";
+			}
+			$$->code+="pop dx\npop cx\npop bx\npop ax\npop BP\n";
+			ostringstream oss;
+			oss<<"Ret "<<fn2->params.size()*2<<"\n";
+			$$->code+=oss.str();
 		}
 		if(funcName=="main")$$->code+="mov ah,4ch\nint 21h\n";
-		$$->code+=funcName+" endp\n";
+		$$->code+=funcName+" endp\n\n";
 }
  		 	;
 
@@ -874,14 +893,16 @@ $$=$1;
 		   $$=new SymbolInfo();
 		   $$->code += $3->code;
 		   $$->address=newAdd($3->name,table->id);
-		   $$->code += "mov ax, "+$$->address+"\n\t";
-		   $$->code += "call PRINTLN\n\t";
+		   $$->code += "mov ax, "+$$->address+"\n";
+		   $$->code += "call PRINTLN\n";
 	   }
 	   | RETURN expression SEMICOLON  {
 		   fprintf(logout,"Line %d: statement : RETURN expression SEMICOLON \n\n",line_count);
 		   // write code for return.
 		   $$=$2;
-		   fn2->retaddress=$2->address;
+		   $$->code+="mov ax, "+$2->address+"\n";
+		   $$->code+="mov "+fn2->retaddress+", ax\n";
+		   $$->address=fn2->retaddress;
 		   cout<<"return ret: "<<$$->address<<endl;
 	   }
 
