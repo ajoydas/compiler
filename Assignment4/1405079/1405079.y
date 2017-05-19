@@ -13,6 +13,7 @@ FILE *logout;
 FILE *error;
 FILE *symtable;
 FILE *codes;
+FILE *optimized;
 bool symtabprint=false;
 SymbolTable* table = new SymbolTable(7,1);
 
@@ -68,6 +69,57 @@ string newAdd(string s,int i)
 	return oss.str();
 }
 
+void optimize(char *s)
+{
+	//printf ("Splitting string \"%s\" into tokens:\n",s);
+	char *end_str;
+	char *token =strtok_r(s, "\n", &end_str);
+	bool prev=false;
+	while (token != NULL)
+	{
+		char *end_token,*reg1,*reg2,*reg3,*reg4;
+		printf("%s\n", token);
+		char *saved=(char*)malloc(sizeof(char) * (strlen(token)+1));
+		strcpy(saved,token);
+
+		char *token2 = strtok_r(token, " ", &end_token);
+		printf("%s\n", token2);
+		if(!strcmp(token2,"mov"))
+		{
+			printf("Mov found = %s\n", token2);
+			reg3 = strtok_r(NULL, ",", &end_token);
+			reg4 = end_token;
+			printf("Reg3 = %s Reg4 = %s\n\n", reg3,reg4);
+			if(prev && !strcmp(reg1,reg4) &&!strcmp(reg2,reg3))
+			{
+				printf("Match found\n");
+				fprintf(optimized,"mov %s,%s\n",reg1,reg2);
+				prev=false;
+			}
+			else
+			{
+				//cout<<"####1"<<endl;
+				if(prev){
+				fprintf(optimized,"mov %s,%s\n",reg1,reg2);
+				}
+                //cout<<"####2"<<endl;
+				prev=true;
+                reg1=reg3;
+                reg2=reg4;
+			}
+		}
+        else {
+                 if(prev)
+                 {
+                    fprintf(optimized,"mov %s,%s\n",reg1,reg2);
+                 }
+                prev=false;
+                fprintf(optimized,"%s\n",saved);
+            }
+		token = strtok_r(NULL, "\n", &end_str);
+	}
+}
+
 %}
 %define parse.error verbose
 %token IF FOR DO INT FLOAT VOID SWITCH DEFAULT ELSE  WHILE BREAK RETURN CASE CONTINUE PRINTLN CONST_INT CONST_FLOAT ID ADDOP MULOP INCOP DECOP RELOP ASSINOP LOGICOP NOT LPAREN RPAREN LCURL RCURL LTHIRD RTHIRD COMMA SEMICOLON SINGLECOM MULTICOM
@@ -92,7 +144,13 @@ start : program
 		//cout<<$5->code;
 
 		$$->code += "end main\n";
-		if(!errorcount)fprintf(codes,"%s\n",$$->code.c_str());
+		if(!errorcount){
+			fprintf(codes,"%s\n",$$->code.c_str());
+			//optimize( const_cast<char*>($$->code.c_str()));
+			//char cha[]="mov ax,@data\nmov ds, ax\nmov es, ax\nmov t1,ax\nmov ax,t1\nadd y1, ax\nmov t2, ax\nadd ax, bx\nmov ax, t2\nmov ah, 4ch\nint 21h\n";
+			//char *ch=cha;
+			optimize( const_cast<char*>($$->code.c_str()));
+		}
 	}
 	;
 
@@ -839,11 +897,12 @@ $$=$1;
 
 			$$->code += string(label1)+":\n";
 			$$->code += $4->code;
-			$$->code += "cmp "+ $4->address+", 1\n\t";
-			$$->code += "jne "+string(label2)+"\n\t";
+			$$->code += "cmp "+ $4->address+", 1\n";
+			$$->code += "jne "+string(label2)+"\n";
 			$$->code += $7->code;
 			$$->code += $5->code;
-			$$->code += string(label2)+":\n\n\t";
+			$$->code +="jmp "+string(label1)+"\n";
+			$$->code += string(label2)+":\n\n";
 		}
 	   | IF LPAREN expression RPAREN statement %prec only_if {
 		    fprintf(logout,"Line %d: statement :  IF LPAREN expression RPAREN statement\n\n",line_count);
@@ -851,11 +910,11 @@ $$=$1;
 
  			char*  label=newLabel();
 
-			$$->code+="mov ax, "+  $3->address +"\n\t";
-			$$->code+="cmp ax, 0\n\t";
-			$$->code+="je "+string(label)+"\n\t";
+			$$->code+="mov ax,"+  $3->address +"\n";
+			$$->code+="cmp ax,0\n";
+			$$->code+="je "+string(label)+"\n";
 			$$->code+=$5->code;
-			$$->code+=string(label)+":\n\n\t";
+			$$->code+=string(label)+":\n\n";
 		 }
 	   | IF LPAREN expression RPAREN statement ELSE statement {
 		   fprintf(logout,"Line %d: statement : IF LPAREN expression RPAREN statement ELSE statement\n\n",line_count);
@@ -864,14 +923,14 @@ $$=$1;
 		   char*  label1=newLabel();
 		   char*  label2=newLabel();
 
-		   $$->code+="mov ax, "+ $3->address +"\n\t";
-		   $$->code+="cmp ax, 0\n\t";
-		   $$->code+="je "+string(label1)+"\n\t";
+		   $$->code+="mov ax,"+ $3->address +"\n";
+		   $$->code+="cmp ax,0\n";
+		   $$->code+="je "+string(label1)+"\n";
 		   $$->code+=$5->code;
-		   $$->code+="jmp " + string(label2)+"\n\t";
-		   $$->code+=string(label1)+":\n\t";
+		   $$->code+="jmp " + string(label2)+"\n";
+		   $$->code+=string(label1)+":\n";
 		   $$->code+=$7->code;
-		   $$->code+=string(label2)+":\n\n\t";
+		   $$->code+=string(label2)+":\n\n";
 	    }
 	   | WHILE LPAREN expression RPAREN statement  {
 		    fprintf(logout,"Line %d: statement : WHILE LPAREN expression RPAREN statement\n\n",line_count);
@@ -879,29 +938,35 @@ $$=$1;
 			char* label1 = newLabel();
 			char* label2 = newLabel();
 
-			$$->code += $3->code;
+			//$$->code += $3->code;
 			$$->code += string(label1)+":\n";
-
-			$$->code += "cmp "+ $3->address +", 1\n\t";
-			$$->code += "jne "+string(label2)+"\n\t";
+			$$->code += $3->code;
+			$$->code += "cmp "+ $3->address +",1\n";
+			$$->code += "jne "+string(label2)+"\n";
 			$$->code += $5->code;
-			$$->code += "jmp "+string(label1)+"\n\t";
-			$$->code += string(label2)+":\n\n\t";
+			$$->code += "jmp "+string(label1)+"\n";
+			$$->code += string(label2)+":\n\n";
 		 }
 	   | PRINTLN LPAREN ID RPAREN SEMICOLON  {
 		   fprintf(logout,"Line %d: statement : PRINTLN LPAREN ID RPAREN SEMICOLON\n\n",line_count);
 		   $$=new SymbolInfo();
 		   $$->code += $3->code;
-		   $$->address=newAdd($3->name,table->id);
-		   $$->code += "mov ax, "+$$->address+"\n";
-		   $$->code += "call PRINTLN\n";
+		   SymbolInfo* temp = table->Lookup($3->getName());
+		   if (temp == NULL){
+			   yyerror("Undeclared variable "+$3->getName());
+		   }
+		   else {
+			   $$->address=newAdd(temp->name,temp->id);
+			   $$->code += "mov ax,"+$$->address+"\n";
+			   $$->code += "call PRINTLN\n";
+	   	  }
 	   }
 	   | RETURN expression SEMICOLON  {
 		   fprintf(logout,"Line %d: statement : RETURN expression SEMICOLON \n\n",line_count);
 		   // write code for return.
 		   $$=$2;
-		   $$->code+="mov ax, "+$2->address+"\n";
-		   $$->code+="mov "+fn2->retaddress+", ax\n";
+		   $$->code+="mov ax,"+$2->address+"\n";
+		   $$->code+="mov "+fn2->retaddress+",ax\n";
 		   $$->address=fn2->retaddress;
 		   cout<<"return ret: "<<$$->address<<endl;
 	   }
@@ -949,7 +1014,7 @@ else
 	temp=new SymbolInfo(temp);
 }
 
-			temp->address=newAdd(temp->name,table->id);
+			temp->address=newAdd(temp->name,temp->id);
 			$$ = temp;
 			cout<<"return Id : "<<$$->address<<endl;
 		}
@@ -990,8 +1055,8 @@ temp->Token="error";
 					int size=temp->arraysize;
 					temp = temp->array[$3->ivalue];
 					temp=new SymbolInfo(temp);
-					temp->code=$3->code+"mov bx, " +$3->address +"\nadd bx, bx\n";
-					temp->address=newAdd(temp->name,table->id);
+					temp->code=$3->code+"mov bx," +$3->address +"\nadd bx,bx\n";
+					temp->address=newAdd(temp->name,temp->id);
 					temp->arraysize=size;
 					//fprintf(logout,"Array index insert: %d\n\n",$$->ivalue);
 				}
@@ -1073,13 +1138,13 @@ else {temp->Token="error";}
 $$=temp;
 
 	$$->code=$3->code+$1->code;
-	$$->code+="mov ax, "+$3->address+"\n";
+	$$->code+="mov ax,"+$3->address+"\n";
 	if($1->arraysize==-1){
-		$$->code+= "mov "+$1->address+", ax\n";
+		$$->code+= "mov "+$1->address+",ax\n";
 	}
 
 	else{
-		$$->code+= "mov  "+$1->address+"[bx], ax\n";
+		$$->code+= "mov "+$1->address+"[bx],ax\n";
 	}
 }
 
@@ -1133,18 +1198,18 @@ $$=s;
 	char *label2=newLabel();
 	char *label3=newLabel();
 
-	$$->code +="mov ax, " + $1->address +"\n\t";
-	$$->code +="mov bx, " + $3->address +"\n\t";
+	$$->code +="mov ax," + $1->address +"\n";
+	$$->code +="mov bx," + $3->address +"\n";
 
 	if($2->name == "&&"){
-		$$->code += "cmp ax, 0\nje "+string(label1)+"cmp bx, 0\nje "+string(label1);
-		$$->code += string(label2)+":\nmov "+ string(t)+", 1\njmp "+string(label3);
-		$$->code += string(label1)+":\nmov "+ string(t)+", 0\n\t";
+		$$->code += "cmp ax,0\nje "+string(label1)+"\ncmp bx,0\nje "+string(label1)+"\n";
+		$$->code += string(label2)+":\nmov "+ string(t)+",1\njmp "+string(label3)+"\n";
+		$$->code += string(label1)+":\nmov "+ string(t)+",0\n";
 	}
 	else if ($2->name == "||"){
-		$$->code += "cmp ax, 0\njne "+string(label1)+"cmp bx, 0\njne "+string(label1);
-		$$->code += string(label2)+":\nmov "+ string(t)+", 0\njmp "+string(label3);
-		$$->code += string(label1)+":\nmov "+ string(t)+", 1\n\t";
+		$$->code += "cmp ax,0\njne "+string(label1)+"\ncmp bx,0\njne "+string(label1)+"\n";
+		$$->code += string(label2)+":\nmov "+ string(t)+",0\njmp "+string(label3)+"\n";
+		$$->code += string(label1)+":\nmov "+ string(t)+",1\n";
 	}
 	$$->code += string(label3)+":\n";
 	$$->address = string(t);
@@ -1221,9 +1286,10 @@ else {s->Token="error";}
 $$=s;
 	$$->code=$1->code;
 	$$->code+=$3->code;
-	$$->code+="mov ax, " + $1->address+"\n";
-	$$->code+="cmp ax, " + $3->address+"\n";
+	$$->code+="mov ax," + $1->address+"\n";
+	$$->code+="cmp ax," + $3->address+"\n";
 	char *t=newTemp();
+	declaration += string(t) + " dw ?\n";
 	char *label1=newLabel();
 	char *label2=newLabel();
 	if($2->name=="<"){
@@ -1245,9 +1311,9 @@ $$=s;
 		$$->code+="jne " + string(label1)+"\n";
 	}
 
-	$$->code+="mov "+string(t) +", 0\n";
+	$$->code+="mov "+string(t) +",0\n";
 	$$->code+="jmp "+string(label2) +"\n";
-	$$->code+=string(label1)+":\nmov "+string(t)+", 1\n";
+	$$->code+=string(label1)+":\nmov "+string(t)+",1\n";
 	$$->code+=string(label2)+":\n";
 	$$->address=string(t);
 
@@ -1328,14 +1394,14 @@ $$->code += $3->code;
 char *t=newTemp();
 declaration += string(t) + " dw ?\n";
 if($2->name=="+"){
-	$$->code += "MOV AX, " + $1->address + "\n\t";
-	$$->code += "ADD AX, " + $3->address + "\n\t";
-	$$->code += "MOV "+ string(t) + ", AX\n\t";
+	$$->code += "mov ax," + $1->address + "\n";
+	$$->code += "add ax," + $3->address + "\n";
+	$$->code += "mov "+ string(t) + ",ax\n";
 }
 else {
-	$$->code += "MOV AX, " + $1->address + "\n\t";
-	$$->code += "SUB AX, " + $3->address + "\n\t";
-	$$->code += "MOV "+ string(t) + ", AX\n\t";
+	$$->code += "mov ax," + $1->address + "\n";
+	$$->code += "sub ax," + $3->address + "\n";
+	$$->code += "mov "+ string(t) + ",ax\n";
 }
 $$->address=string(t);
 
@@ -1433,25 +1499,25 @@ else {s->Token="error";}
 $$=s;
 $$->code = $1->code;
 $$->code += $3->code;
-$$->code += "mov ax, "+ $1->address+"\n";
-$$->code += "mov bx, "+ $3->address +"\n";
+$$->code += "mov ax,"+ $1->address+"\n";
+$$->code += "mov bx,"+ $3->address +"\n";
 char *t=newTemp();
 declaration += string(t) + " dw ?\n";
 if($2->name=="*"){
 	$$->code += "mul bx\n";
-	$$->code += "mov "+ string(t) + ", ax\n";
+	$$->code += "mov "+ string(t) + ",ax\n";
 }
 else if($2->name=="/"){
 	// clear dx, perform 'div bx' and mov ax to temp
-	$$->code += "MOV DX, 0\n\t";
-	$$->code += "DIV BX\n\t";
-	$$->code += "MOV "+string(t)+", ax\n\t";
+	$$->code += "mov dx,0\n";
+	$$->code += "div bx\n";
+	$$->code += "mov "+string(t)+",ax\n";
 }
 else{
 	// clear dx, perform 'div bx' and mov dx to temp
-	$$->code += "MOV DX, 0\n\t";
-	$$->code += "DIV BX\n\t";
-	$$->code += "MOV "+string(t)+", dx\n\t";
+	$$->code += "mov dx,0\n";
+	$$->code += "div bx\n";
+	$$->code += "mov "+string(t)+",dx\n";
 }
 $$->address=string(t);
 		}
@@ -1471,11 +1537,12 @@ if($2->Token!="error"){
 					else if(type == "float"){
 						$$->fvalue = $2->fvalue * -1;
 					}
+					temp->code=$2->code;
 					char *t=newTemp();
 					declaration += string(t) + " dw ?\n";
-					temp->code="mov ax, " + $2->address + "\n";
+					temp->code+="mov ax," + $2->address + "\n";
 					temp->code+="neg ax\n";
-					temp->code+="mov "+string(t)+", ax";
+					temp->code+="mov "+string(t)+",ax";
 					temp->address=string(t);
 
 				}
@@ -1506,12 +1573,17 @@ SymbolInfo* temp = new SymbolInfo();
 						temp->ivalue = 1;
 					}
 				}
+				temp->code=$2->code;
 				char *t=newTemp();
+				char *label1=newLabel();
+				char *label2=newLabel();
 				declaration += string(t) + " dw ?\n";
-				temp->code="mov ax, " + $2->address + "\n";
-				temp->code+="not ax\n";
-				temp->code+="mov "+string(t)+", ax";
+				temp->code+="mov ax," + $2->address + "\n";
+				temp->code+="cmp ax,0\n";
+				temp->code+="je " + string(label1) + "\nmov " + string(t) +",0\njmp " + string(label2)+"\n";
+				temp->code+=string(label1)+":\nmov "+string(t) + ",1\n" + string(label2) + ":\n";
 				temp->address=string(t);
+
 }
 else {temp->Token="error";}
 
@@ -1533,8 +1605,8 @@ factor	: variable  {
 			else{
 				char *t= newTemp();
 				declaration += string(t) + " dw ?\n";
-				$$->code+="mov ax, " + $1->address + "[bx]\n";
-				$$->code+= "mov " + string(t) + ", ax\n";
+				$$->code+="mov ax," + $1->address + "[bx]\n";
+				$$->code+= "mov " + string(t) + ",ax\n";
 				$$->address=string(t);
 			}
 			cout<<"return var: "<<$$->address<<endl;
@@ -1636,7 +1708,7 @@ if($1->Token!="error")
 			else if(type == "float"){
 				$1->fvalue++;
 			}
-			$1->code += "INC " + $1->address + "\n\t";
+			$1->code += "INC " + $1->address + "\n";
 }
 $$=$1;
 }
@@ -1650,7 +1722,7 @@ if($1->Token!="error")
 			else if(type == "float"){
 				$1->fvalue--;
 			}
-			$1->code += "DEC " + $1->address + "\n\t";
+			$1->code += "DEC " + $1->address + "\n";
 
 }
 $$=$1;
@@ -1710,6 +1782,7 @@ int main(int argc,char *argv[]){
 
 	logout= fopen("log.txt","w");
 	codes= fopen("code.asm","w");
+	optimized= fopen("optimized.asm","w");
 	error= fopen("error.txt","w");
 	symtable= fopen("symtable.txt","w");
 

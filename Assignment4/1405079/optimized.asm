@@ -49,7 +49,6 @@ t33 dw ?
 t34 dw ?
 t35 dw ?
 t36 dw ?
-
 .code
 PRINTLN PROC
 @END_IF1:
@@ -74,7 +73,6 @@ MOV DL,0AH
 INT 21H
 RET
 PRINTLN ENDP
-
 var proc
 push BP
 mov BP,SP
@@ -88,10 +86,8 @@ mov b2,ax
 push a2
 mov ax,[BP+6]
 mov a2,ax
-mov ax,a2
 add ax,b2
 mov t1,ax
-mov ax,t1
 mov t0,ax
 pop a2
 pop b2
@@ -102,7 +98,6 @@ pop ax
 pop BP
 Ret 4
 var endp
-
 foo proc
 push BP
 mov BP,SP
@@ -117,7 +112,6 @@ mov t3,5
 mov ax,x1
 sub ax,t3
 mov t4,ax
-mov ax,t4
 mov y1,ax
 pop dx
 pop cx
@@ -126,7 +120,6 @@ pop ax
 pop BP
 Ret 0
 foo endp
-
 main proc
 mov ax,@data
 mov ds,ax
@@ -156,9 +149,7 @@ mov t13,ax
 mov ax,t11
 add ax,t13
 mov t14,ax
-mov ax,t14
 mov i4,ax
-mov ax,i4
 call PRINTLN
 mov t15,2
 mov t16,3
@@ -213,7 +204,6 @@ mov t27,1
 L7:
 mov ax,t27
 mov j4,ax
-mov ax,j4
 call PRINTLN
 mov t28,1
 mov t29,2
@@ -234,9 +224,7 @@ mov t34,ax
 mov ax,t0
 add ax,t34
 mov t35,ax
-mov ax,t35
 mov d4,ax
-mov ax,d4
 call PRINTLN
 mov t36,0
 mov ax,t36
@@ -244,6 +232,4 @@ mov t5,ax
 mov ah,4ch
 int 21h
 main endp
-
 end main
-

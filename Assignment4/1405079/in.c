@@ -1,10 +1,25 @@
-int x;
-int f(int a,int b)
-{
+int x,y,z; float a;
+
+void foo();
+
+int var(int a, int b){
 	return a+b;
 }
+
+void foo(){
+	x=2;
+	y=x-5;
+}
+
 int main(){
-	int x,y,z;
-	y=f(x);
-	println(y);
+	int a[2],c,i,j ; float d;
+	a[0]=1;
+	a[1]=5;
+	i= a[0]+a[1];
+	println(i);
+	j= 2*3+(5%3 < 4 && 8) || 2 ;
+	println(j);
+	d=var(1,2*3)+3.5*2;
+	println(d);
+	return 0;
 }

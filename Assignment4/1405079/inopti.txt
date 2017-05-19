@@ -1,0 +1,12 @@
+mov ax,@data
+mov ds,ax
+mov es,ax
+mov t1,ax
+mov ax,t1
+add y1,ax
+mov t2,ax
+mov ax,t3
+mov t3,ax
+jmp L1
+mov ah, 4ch
+int 21h

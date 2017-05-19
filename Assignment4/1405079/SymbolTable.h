@@ -22,8 +22,9 @@ class SymbolInfo
 public:
 	string name;
     string type;
-		string code;
-		string address;
+	int id;
+	string code;
+	string address;
 	string Token;
     SymbolInfo* next;
 	int ivalue;
@@ -36,7 +37,8 @@ public:
     {
         this->name = "";
         this->type = "";
-				this->code = "";
+		this->id=-1;
+		this->code = "";
         this->address = "";
 		ivalue=-1e+007;
 		fvalue=-1e+007;
@@ -49,6 +51,7 @@ public:
     SymbolInfo(string name,string type,SymbolInfo* next=NULL) {
         this->name = name;
         this->type = type;
+		this->id=-1;
         this->next = next;
 				this->code = "";
         this->address = "";
@@ -63,6 +66,7 @@ public:
     {
         this->name = s->name;
         this->type = s->type;
+		this->id=s->id;
 		this->code = s->code;
         this->address = s->address;
 		this->ivalue=s->ivalue;
@@ -150,6 +154,7 @@ public:
         {
             //cout<<"Inserted in ScopeTable# "<<id<<" at position "<<pos<<"," <<0<<endl;
 			SymbolInfo *temp=new SymbolInfo(symbol.getName(),symbol.getType());
+			temp->id=this->id;
 			temp->code=symbol.code;
 			temp->address=symbol.address;
 			temp->ivalue=symbol.ivalue;
@@ -177,6 +182,7 @@ public:
             }
             //cout<<"Inserted in ScopeTable# "<<id<<" at position "<<pos<<"," <<count+1<<endl;
 			SymbolInfo *temp=new SymbolInfo(symbol.getName(),symbol.getType());
+			temp->id=this->id;
 			temp->code=symbol.code;
 			temp->address=symbol.address;
 			temp->ivalue=symbol.ivalue;
