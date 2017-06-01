@@ -2,16 +2,14 @@
 .stack 100h
 .data
 t0 dw ?
-d2 dw ?
+a2 dw ?
+b2 dw ?
+i2 dw ?
 t1 dw ?
-b2 dw ?, ?, ?, ?
 t2 dw ?
 t3 dw ?
-a2 dw ?
 t4 dw ?
 t5 dw ?
-t6 dw ?
-t7 dw ?
 .code
 PRINTLN PROC
 END_IF1:
@@ -40,30 +38,43 @@ main proc
 mov ax,@data
 mov ds,ax
 mov es,ax
-mov t1,10
+mov t1,0
 mov ax,t1
-mov d2,ax
+mov b2,ax
+mov t2,0
+mov ax,t2
+mov i2,ax
+L4:
 mov t3,4
-mov t2,2
-mov bx,t2
-add bx,bx
-mov ax,t3
-mov b2[bx],ax
-mov t4,2
-mov bx,t4
-add bx,bx
-mov ax,b2[bx]
-mov t5,ax
-mov ax,d2
-mov bx,t5
-mov dx,0
-div bx
-mov t6,ax
+mov ax,i2
+cmp ax,t3
+jl L0
+mov t4,0
+jmp L1
+L0:
+mov t4,1
+L1:
+cmp t4, 0
+je L5
+mov t5,3
+mov ax,t5
 mov a2,ax
+L2:
+DEC a2
+cmp a2,0
+je L3
+INC b2
+jmp L2
+L3:
+INC i2
+jmp L4
+L5:
+mov ax,a2
 call PRINTLN
-mov t7,0
-mov ax,t7
-mov t0,ax
+mov ax,b2
+call PRINTLN
+mov ax,i2
+call PRINTLN
 mov ah,4ch
 int 21h
 main endp

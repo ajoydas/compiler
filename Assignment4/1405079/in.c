@@ -1,10 +1,13 @@
 int main(){
-	int d;
-	d=10;
-	int b[3];
-	b[2]=4;
-	int a;
-	a=d/b[2];
-	println(a);
-	return 0;
+    int a,b,i;
+    b=0;
+    for(i=0;i<4;i++){
+        a=3;
+        while(a--){
+            b++;
+        }
+    }
+    println(a);
+    println(b);
+    println(i);
 }
