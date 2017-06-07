@@ -11,6 +11,8 @@ void yyerror(string s){
 int yylex(void);
 extern FILE *yyin;
 extern DAG_Node dag_array[1000];
+FILE *out;
+
 %}
 
 %union{
@@ -52,6 +54,10 @@ int main(int argc,char *argv[])
 		return 0;
 	}
 	yyin = fopen(argv[1], "r");
+	out= fopen("output.txt","w");
 	yyparse();
+
+	fclose(yyin);
+	fclose(out);
     return 0;
 }

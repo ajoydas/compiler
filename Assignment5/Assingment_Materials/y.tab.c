@@ -76,8 +76,10 @@ void yyerror(string s){
 int yylex(void);
 extern FILE *yyin;
 extern DAG_Node dag_array[1000];
+FILE *out;
 
-#line 81 "y.tab.c" /* yacc.c:339  */
+
+#line 83 "y.tab.c" /* yacc.c:339  */
 
 # ifndef YY_NULLPTR
 #  if defined __cplusplus && 201103L <= __cplusplus
@@ -139,12 +141,12 @@ extern int yydebug;
 
 union YYSTYPE
 {
-#line 16 "parser.y" /* yacc.c:355  */
+#line 18 "parser.y" /* yacc.c:355  */
 
     int index;
     char addr[100];
 
-#line 148 "y.tab.c" /* yacc.c:355  */
+#line 150 "y.tab.c" /* yacc.c:355  */
 };
 
 typedef union YYSTYPE YYSTYPE;
@@ -161,7 +163,7 @@ int yyparse (void);
 
 /* Copy the second part of user declarations.  */
 
-#line 165 "y.tab.c" /* yacc.c:358  */
+#line 167 "y.tab.c" /* yacc.c:358  */
 
 #ifdef short
 # undef short
@@ -459,8 +461,8 @@ static const yytype_uint8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    30,    30,    32,    33,    34,    36,    37,    38,    40,
-      41,    42
+       0,    32,    32,    34,    35,    36,    38,    39,    40,    42,
+      43,    44
 };
 #endif
 
@@ -1235,55 +1237,55 @@ yyreduce:
   switch (yyn)
     {
         case 2:
-#line 30 "parser.y" /* yacc.c:1646  */
+#line 32 "parser.y" /* yacc.c:1646  */
     { print_dag_array(); construct_tac();}
-#line 1241 "y.tab.c" /* yacc.c:1646  */
+#line 1243 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 3:
-#line 32 "parser.y" /* yacc.c:1646  */
+#line 34 "parser.y" /* yacc.c:1646  */
     { (yyval.index) = constructNode("+",(yyvsp[-2].index),(yyvsp[0].index)); }
-#line 1247 "y.tab.c" /* yacc.c:1646  */
+#line 1249 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 4:
-#line 33 "parser.y" /* yacc.c:1646  */
+#line 35 "parser.y" /* yacc.c:1646  */
     { (yyval.index) = constructNode("-",(yyvsp[-2].index),(yyvsp[0].index)); }
-#line 1253 "y.tab.c" /* yacc.c:1646  */
+#line 1255 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 6:
-#line 36 "parser.y" /* yacc.c:1646  */
+#line 38 "parser.y" /* yacc.c:1646  */
     { (yyval.index) = constructNode("*",(yyvsp[-2].index),(yyvsp[0].index)); }
-#line 1259 "y.tab.c" /* yacc.c:1646  */
+#line 1261 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 7:
-#line 37 "parser.y" /* yacc.c:1646  */
+#line 39 "parser.y" /* yacc.c:1646  */
     { (yyval.index) = constructNode("/",(yyvsp[-2].index),(yyvsp[0].index)); }
-#line 1265 "y.tab.c" /* yacc.c:1646  */
+#line 1267 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 9:
-#line 40 "parser.y" /* yacc.c:1646  */
+#line 42 "parser.y" /* yacc.c:1646  */
     { (yyval.index) = (yyvsp[-1].index); }
-#line 1271 "y.tab.c" /* yacc.c:1646  */
+#line 1273 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 10:
-#line 41 "parser.y" /* yacc.c:1646  */
+#line 43 "parser.y" /* yacc.c:1646  */
     {  (yyval.index) = constructNode(string((yyvsp[0].addr)),0,0); }
-#line 1277 "y.tab.c" /* yacc.c:1646  */
+#line 1279 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 11:
-#line 42 "parser.y" /* yacc.c:1646  */
+#line 44 "parser.y" /* yacc.c:1646  */
     {  (yyval.index) = constructNode(string((yyvsp[0].addr)),0,0); }
-#line 1283 "y.tab.c" /* yacc.c:1646  */
+#line 1285 "y.tab.c" /* yacc.c:1646  */
     break;
 
 
-#line 1287 "y.tab.c" /* yacc.c:1646  */
+#line 1289 "y.tab.c" /* yacc.c:1646  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -1511,7 +1513,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 44 "parser.y" /* yacc.c:1906  */
+#line 46 "parser.y" /* yacc.c:1906  */
 
 
 int main(int argc,char *argv[])
@@ -1523,6 +1525,10 @@ int main(int argc,char *argv[])
 		return 0;
 	}
 	yyin = fopen(argv[1], "r");
+	out= fopen("output.txt","w");
 	yyparse();
+
+	fclose(yyin);
+	fclose(out);
     return 0;
 }
